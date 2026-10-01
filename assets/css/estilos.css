@@ -1,0 +1,6 @@
+:root { color-scheme: light; --azul: #12536a; --verde: #167f80; --dorado: #b9812e; --tinta: #213b45; --suave: #6e7f85; --borde: #e1e8e7; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--tinta); background: #f3f6f5; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a:focus-visible, button:focus-visible { outline: 3px solid #b9812e; outline-offset: 4px; }

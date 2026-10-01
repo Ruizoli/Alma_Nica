@@ -1,0 +1,20 @@
+/* Identidad compartida: emblema transparente y nombre accesible. */
+.marca { display:flex; flex-direction:column; align-items:center; gap:3px; text-align:center; }
+.marca .marca-emblema { display:block; width:84px; height:84px; max-height:none; object-fit:contain; background:transparent; border-radius:0; }
+.marca .marca-nombre { display:block; color:#f5fafc; font-family:Georgia,serif; font-size:30px; line-height:1.05; letter-spacing:-1px; }
+.marca .marca-nombre span { color:#efae38; font:inherit; }
+.marca .marca-lema { display:block; color:#c6dde4; font-size:9px; margin-top:4px; letter-spacing:.1px; }
+.sidebar .brand { display:block; padding:3px 8px 19px; text-decoration:none; }
+.commercial-hero { gap:24px; min-height:174px; background-position:center; }
+.hero-brand { flex-shrink:0; padding:0 8px; }
+.hero-brand .marca { flex-direction:row; gap:14px; }
+.hero-brand .marca-emblema { width:116px; height:116px; }
+.hero-brand .marca-nombre { font-size:38px; }
+.hero-brand .marca-lema { font-size:11px; }
+.identidad .marca { margin:0 auto 22px; }
+.identidad .marca-emblema { width:112px; height:112px; }
+.identidad .marca-nombre { color:#12536a; font-size:38px; }
+.identidad .marca-nombre span { color:#c38927; }
+.identidad .marca-lema { color:#427180; font-size:11px; }
+@media(max-width:1150px) { .hero-brand .marca { flex-direction:column; gap:2px; }.hero-brand .marca-emblema { width:80px; height:80px; }.hero-brand .marca-nombre { font-size:27px; }.hero-brand .marca-lema { font-size:8px; } }
+@media(max-width:700px) { .sidebar .brand { max-width:none; padding-bottom:13px; }.sidebar .marca { flex-direction:row; justify-content:center; gap:10px; }.sidebar .marca-emblema { width:54px; height:54px; }.sidebar .marca-nombre { font-size:27px; } }

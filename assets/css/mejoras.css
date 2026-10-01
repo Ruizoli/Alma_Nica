@@ -1,0 +1,8 @@
+.search-status { display:block; font-size:11px; color:#55748a; flex-basis:100%; min-height:15px; }
+.filterbar { flex-wrap:wrap; }
+[data-live-region][aria-busy="true"] { opacity:.65; }
+.global-search { flex-wrap:wrap; }
+.global-search>.search-status { position:absolute; top:100%; font-size:9px; padding:2px 8px; }
+.search-popup { position:absolute; top:calc(100% + 20px); left:0; width:100%; min-width:250px; max-height:65vh; overflow:auto; z-index:30; padding:18px; background:white; color:#24465d; border:1px solid #dbe6ee; border-radius:10px; box-shadow:0 12px 35px #0c304a30; }
+.search-popup h2 { font-size:16px; }.search-popup h3 { font-size:13px; }.search-popup .search-results li { align-items:center; font-size:12px; }
+[hidden] { display:none!important; }

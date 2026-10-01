@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS LoginIntento (
+    Clave CHAR(64) PRIMARY KEY,
+    Fallos INT NOT NULL DEFAULT 0,
+    Bloqueado_Hasta BIGINT NOT NULL DEFAULT 0,
+    Actualizado BIGINT NOT NULL
+) ENGINE=InnoDB;
