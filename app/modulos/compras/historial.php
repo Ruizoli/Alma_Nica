@@ -4,4 +4,4 @@
 <div data-live-region="listado"><div class="table-wrap"><table><thead><tr><th>Recepción</th><th>Orden</th><th>Fecha</th><th>Proveedor</th><th>Factura</th><th>Unidades</th><th>Responsable</th><th>Detalle</th></tr></thead><tbody>
 <?php foreach ($listado['filas'] as $r): ?><tr><td>RC-<?= str_pad($r['Id_Recepcion'],5,'0',STR_PAD_LEFT) ?></td><td>OC-<?= str_pad($r['Id_OrdenCompra'],5,'0',STR_PAD_LEFT) ?></td><td><?= escapar(fechaCorta($r['Fecha'])) ?></td><td><?= escapar($r['Proveedor']) ?></td><td><?= escapar($r['Factura'] ?? '—') ?></td><td><?= numero($r['Unidades']) ?></td><td><?= escapar($r['Empleado']) ?></td><td><a class="button mini secondary" href="<?= escapar(ruta('compras',['id'=>$r['Id_OrdenCompra']])) ?>">Ver orden</a></td></tr><?php endforeach; ?>
 <?php if (!$listado['filas']): ?><tr><td colspan="8" class="empty">Las entregas aparecerán aquí después de guardar una recepción.</td></tr><?php endif; ?>
-</tbody></table></div><?php require __DIR__.'/parciales/paginacion.php'; ?></div></section>
+</tbody></table></div><?php require __DIR__ . '/../../vistas/parciales/paginacion.php'; ?></div></section>

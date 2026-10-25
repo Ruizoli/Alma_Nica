@@ -26,5 +26,5 @@
     <?php endforeach; ?>
     <?php if (!$listado['filas']): ?><tr><td colspan="6" class="empty"><strong>No hay órdenes en esta vista.</strong><p>Crea una orden para comenzar a organizar tus compras.</p></td></tr><?php endif; ?>
     </tbody></table></div>
-    <?php require __DIR__.'/parciales/paginacion.php'; ?></div>
+    <?php require __DIR__ . '/../../vistas/parciales/paginacion.php'; ?></div>
 </section>

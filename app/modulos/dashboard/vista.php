@@ -2,7 +2,7 @@
 <?php if (!empty($datos['error'])): ?><div class="notice danger"><?= escapar($datos['error']) ?></div><?php else: $s=$datos['estadisticas']; ?>
 <section class="commercial-hero">
     <div><h1>¡Bienvenido, <?= escapar($_SESSION['empleado']['nombre']) ?>!</h1><p>SISTEMA DE VENTAS E INVENTARIO · ALMANICA</p><span>“El Corazón de Nicaragua”</span></div>
-    <div class="hero-brand"><?php require __DIR__ . "/parciales/marca.php"; ?></div>
+    <div class="hero-brand"><?php require __DIR__ . '/../../vistas/parciales/marca.php'; ?></div>
 </section>
 <section class="metrics">
     <?php $metricas=[['ventas','Ventas hoy',dinero($datos['ventaHoy']['importe']),numero($datos['ventaHoy']['cantidad']).' operaciones'],['productos','Productos',numero($s['productos']),numero($s['unidades']).' unidades'],['clientes','Clientes',numero($s['clientes']),'Registrados'],['proveedores','Proveedores',numero($s['proveedores']),'Registrados']]; ?>

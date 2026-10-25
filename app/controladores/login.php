@@ -1,7 +1,7 @@
 <?php
 if (!defined('ALMANICA_ENTRADA')) { http_response_code(404); exit; }
 require_once __DIR__ . '/../inicio.php';
-require_once __DIR__ . '/../modelos/seguridad.php';
+require_once __DIR__ . '/../compartido/seguridad.php';
 if (isset($_SESSION['empleado']['usuario_id'])) { header('Location: panel.php'); exit; }
 unset($_SESSION['empleado']);
 $error = ''; $conectado = false; $espera = 0;

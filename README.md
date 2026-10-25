@@ -1,4 +1,4 @@
-# almaNica — Ventas e inventario
+# AlmaNica — Ventas e inventario
 
 Aplicación local en PHP 8.2, PDO, MySQL/MariaDB, JavaScript y Bootstrap 5.
 
@@ -54,6 +54,7 @@ manuales en esta versión. Los productos admiten fotos JPG, PNG y WebP de hasta 
 ## Permisos y seguridad
 
 - Administrador: todos los módulos.
+- Inventarista: productos, categorías, proveedores, compras, recepciones e historial; sin eliminación de registros.
 - Vendedor y Cajero: dashboard, ventas, clientes, consulta de productos y contraseña propia.
 - Permisos verificados en PHP, no solo en el menú.
 - Usuarios y empleados se desactivan para mantener el historial.
@@ -82,19 +83,19 @@ app/
 assets/
   css/            estilos generales, login y sistema
   js/             comportamiento del login y operaciones
-  img/            logo original
+  img/            emblema, fondo y recursos gráficos
 config/
   base_datos.php  credenciales locales
   conexion.php    función conectar()
   catalogos.php   campos de los catálogos
- database/        migraciones SQL
- tests/           pruebas de integración por CLI
+database/        migraciones SQL
+tests/           pruebas de integración por CLI
 index.php         entrada del login
 panel.php         sistema: ?modulo=productos, ventas, etc.
 salir.php         cierre de sesión por POST
 ```
 
-Para ampliar un catálogo, editar config/catalogos.php. Para un flujo nuevo, agregar
+Para ampliar un catálogo, editar app/modulos/<modulo>/campos.php y formulario.php. Para un flujo nuevo, agregar
 modelo y vista, y conectarlos al controlador del sistema. Las consultas dinámicas
 usan nombres de tablas y columnas de la configuración interna, nunca del navegador.
 
@@ -102,7 +103,7 @@ usan nombres de tablas y columnas de la configuración interna, nunca del navega
 
 `/c/xampp/php/php.exe tests/integracion.php` crea una base aislada con nombre
 `almanica_pruebas_<identificador>` y comprueba catálogos, stock, operaciones, reportes
-y bloqueo del login. No copia datos reales. Requiere permiso de creación de bases.
+y bloqueo del login. Las migraciones 001, 002 y 003 se instalan en esa base temporal. No copia datos reales. Requiere permiso de creación de bases.
 La base temporal se elimina al terminar; puede conservarse expresamente con la variable
 `ALMANICA_KEEP_TEST_DB=1` para pruebas HTTP. `ALMANICA_DB` permite seleccionar la base
 de un servidor temporal. Los tests están bloqueados desde el navegador.
@@ -120,7 +121,7 @@ y un servidor de producción. No publicar las credenciales locales.
 - Formatos admitidos: JPG, PNG y WebP, máximo 2 MB y 12 megapíxeles. Se comprueban MIME y dimensiones; no se admiten SVG ni archivos ejecutables.
 - Las imágenes se guardan con nombres aleatorios .bin en storage/productos y se sirven por imagen.php con sesión y cabeceras de imagen.
 - Respaldar tanto la base de datos como storage/productos. Las fotos sustituidas se conservan en disco para evitar pérdidas accidentales.
-- database/002_imagenes_recepciones.sql agrega Imagen, RecepcionCompra y Detalle_Recepcion. No elimina registros existentes.
+-database/002_imagenes_recepciones.sql agrega Imagen, RecepcionCompra y Detalle_Recepcion. No elimina registros existentes.
 - La búsqueda superior consulta productos, clientes y proveedores según los permisos del usuario.
 - El gráfico circular muestra la distribución de unidades entre los cuatro productos más vendidos en los últimos treinta días.
 - comercial.css contiene los cambios visuales; las vistas de compras están separadas del formulario de ventas.
@@ -128,3 +129,12 @@ y un servidor de producción. No publicar las credenciales locales.
 ## Organización y diseño
 
 La estructura está documentada en docs/estructura.md. El login utiliza una única hoja assets/css/login.css y el fondo assets/img/login-nicaragua.png. La referencia y el prompt están documentados en docs/fondo-login.md.
+
+
+## Guía de código
+
+Consulta [docs/estructura.md](docs/estructura.md) para localizar el controlador, modelo y vista de cada módulo. Ventas está en app/modulos/ventas/; clientes en app/modulos/clientes/; productos en app/modulos/inventario/; el dashboard en app/modulos/dashboard/. Los estilos de búsqueda están en assets/css/busqueda.css.
+
+Pruebas de permisos: `/c/xampp/php/php.exe tests/roles.php`.
+
+Los formularios se agrupan por módulo en app/modulos/. Consulta docs/estructura.md para aprender qué archivo modificar.

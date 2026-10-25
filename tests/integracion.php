@@ -4,13 +4,13 @@ if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 require __DIR__ . '/../config/conexion.php';
 require __DIR__ . '/../app/soporte/funciones.php';
 require __DIR__ . '/../app/soporte/sistema.php';
-require __DIR__ . '/../app/modelos/catalogo.php';
-require __DIR__ . '/../app/modelos/operacion.php';
-require __DIR__ . '/../app/modelos/compra.php';
-require __DIR__ . '/../app/modelos/seguridad.php';
-require __DIR__ . '/../app/modelos/dashboard.php';
-require __DIR__ . '/../app/modelos/reporte.php';
-require __DIR__ . '/../app/modelos/perfil.php';
+require __DIR__ . '/../app/compartido/catalogo_modelo.php';
+require __DIR__ . '/../app/compartido/operaciones.php';
+require __DIR__ . '/../app/modulos/compras/modelo.php';
+require __DIR__ . '/../app/compartido/seguridad.php';
+require __DIR__ . '/../app/modulos/dashboard/modelo.php';
+require __DIR__ . '/../app/modulos/reportes/modelo.php';
+require __DIR__ . '/../app/modulos/configuracion/modelo.php';
 function comprobar(bool $condicion, string $texto): void { if (!$condicion) throw new RuntimeException($texto); echo "OK: $texto\n"; }
 function rechaza(callable $accion, string $texto): void { try { $accion(); } catch (InvalidArgumentException|PDOException $e) { comprobar(true,$texto); return; } throw new RuntimeException('No rechazo: ' . $texto); }
 $origen = conectar();
@@ -26,6 +26,7 @@ try {
     $db->exec('SET FOREIGN_KEY_CHECKS=1');
     $db->exec(file_get_contents(__DIR__ . '/../database/001_seguridad.sql'));
     $db->exec(file_get_contents(__DIR__ . '/../database/002_imagenes_recepciones.sql'));
+    $db->exec(file_get_contents(__DIR__ . '/../database/003_rol_inventarista.sql'));
     $db->exec("INSERT INTO Empleado (Nombre) VALUES ('Administrador de prueba')"); $empleado=(int)$db->lastInsertId();
     $q=$db->prepare('INSERT INTO Usuario (Id_Empleado,Usuario,Contrasena,Rol) VALUES (?,?,?,?)'); $q->execute([$empleado,'admin_test',password_hash('Prueba-Segura-2026!',PASSWORD_DEFAULT),'Administrador']); $admin=(int)$db->lastInsertId();
     $_SESSION=['empleado'=>['id'=>$empleado,'usuario_id'=>$admin,'rol'=>'Administrador']];

@@ -1,59 +1,4 @@
 <?php defined('ALMANICA') || exit; ?>
-<?php if (in_array($accion,['nuevo','editar'],true) && puedeEditar($modulo)): ?>
-<section class="card-box form-card">
-<div class="section-heading">
-<div>
-<h2><?= $accion==='nuevo'?'Nuevo registro':'Editar registro' ?>
-</h2>
-<p class="muted">Completa los datos de <?= escapar($def['singular']) ?>.</p>
-</div>
-<a class="button secondary" href="<?= escapar(ruta($modulo)) ?>">Volver</a>
-</div>
-<form method="post" class="fields-grid" enctype="multipart/form-data">
-<?php campoCsrf(); ?>
-<input type="hidden" name="id" value="<?= (int) ($registro[$def['id']] ?? $_GET['id'] ?? 0) ?>">
-<?php foreach ($def['campos'] as $nombre=>[$label,$tipo,$requerido]): $valor = $tipo==='password'?'':($registro[$nombre] ?? ($nombre==='Estado'?1:($nombre==='Stock_Minimo'?5:($tipo==='integer'?0:'')))); ?>
-<label class="field <?= $tipo==='textarea'?'wide':'' ?>">
-<span><?= escapar($label) ?><?= $requerido?' *':'' ?>
-</span>
-<?php if (isset($opciones[$tipo])): ?>
-<select name="<?= escapar($nombre) ?>" <?= $requerido?'required':'' ?>>
-<?php if (!$requerido): ?>
-<option value="">Sin asignar</option>
-<?php endif; ?>
-<?php foreach ($opciones[$tipo] as $key=>$texto): ?>
-<option value="<?= escapar($key) ?>" <?= (string)$valor===(string)$key?'selected':'' ?>><?= escapar($texto) ?>
-</option>
-<?php endforeach; ?>
-</select>
-<?php elseif ($tipo==='textarea'): ?>
-<textarea name="<?= escapar($nombre) ?>" rows="3" maxlength="5000"><?= escapar($valor) ?>
-</textarea>
-<?php else: ?>
-<input name="<?= escapar($nombre) ?>" type="<?= in_array($tipo,['integer','money'],true)?'number':escapar($tipo) ?>" value="<?= escapar($valor) ?>" <?= $tipo==='password'?'autocomplete="new-password"':'' ?> <?= $requerido && !($tipo==='password' && $accion==='editar')?'required':'' ?> <?= in_array($tipo,['integer','money'],true)?'min="0" max="'.($tipo==='integer'?'2147483647':'99999999.99').'" step="'.($tipo==='money'?'0.01':'1').'"':'' ?> <?= isset($def['campos'][$nombre][3])?'maxlength="'.(int)$def['campos'][$nombre][3].'"':'' ?> <?= $nombre==='Stock_Actual' && $accion==='editar'?'readonly':'' ?>>
-<?php endif; ?>
-<?php if ($tipo==='password' && $accion==='editar'): ?>
-<small>Déjala vacía para conservar la contraseña.</small>
-<?php endif; ?>
-<?php if ($nombre==='Stock_Actual'): ?>
-<small>Después de crear el producto, el stock cambia con compras y ventas.</small>
-<?php endif; ?>
-</label>
-<?php endforeach; ?>
-<?php if ($modulo==='productos'): ?>
-<div class="wide image-editor">
-    <img data-photo-preview src="<?= escapar(fotoProducto($registro['Imagen'] ?? null)) ?>" alt="Vista previa del producto">
-    <div><label class="field"><span>Foto del producto</span><input type="file" name="foto" accept="image/jpeg,image/png,image/webp" data-photo-input><small>JPG, PNG o WebP · Máximo 2 MB. La foto se mostrará en productos y ventas.</small></label>
-    <?php if (!empty($registro['Imagen'])): ?><label class="remove-photo"><input type="checkbox" name="quitar_foto" value="1"> Quitar foto actual</label><?php endif; ?></div>
-</div>
-<?php endif; ?>
-<div class="wide form-actions">
-<a class="button secondary" href="<?= escapar(ruta($modulo)) ?>">Cancelar</a>
-<button class="button" type="submit">Guardar registro</button>
-</div>
-</form>
-</section>
-<?php else: ?>
 <section class="card-box">
 <div class="section-heading">
 <div>
@@ -125,7 +70,7 @@
 <td>
 <div class="row-actions">
 <a class="button mini secondary" href="<?= escapar(ruta($modulo,['accion'=>'editar','id'=>$fila[$def['id']]])) ?>">Editar</a>
-<?php if (!in_array($modulo,['usuarios','empleados'],true)): ?>
+<?php if (esAdmin() && !in_array($modulo,['usuarios','empleados'],true)): ?>
 <form method="post" data-confirm="¿Eliminar este registro? Esta acción no se puede deshacer.">
 <?php campoCsrf(); ?>
 <input type="hidden" name="id" value="<?= (int)$fila[$def['id']] ?>">
@@ -141,6 +86,5 @@
 </tbody>
 </table>
 </div>
-<?php require __DIR__ . '/parciales/paginacion.php'; ?></div>
+<?php require __DIR__ . '/../../vistas/parciales/paginacion.php'; ?></div>
 </section>
-<?php endif; ?>

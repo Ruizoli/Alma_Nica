@@ -1,10 +1,15 @@
 <?php
+require_once __DIR__ . '/../../config/roles.php';
 function esAdmin(): bool { return ($_SESSION['empleado']['rol'] ?? '') === 'Administrador'; }
 function puedeVer(string $modulo): bool
 {
-    return esAdmin() || in_array($modulo, ['dashboard','productos','ventas','clientes','configuracion','buscar'], true);
+    return in_array($modulo, permisosRoles()[$_SESSION['empleado']['rol'] ?? '']['ver'] ?? [], true);
 }
-function puedeEditar(string $modulo): bool { return esAdmin() || in_array($modulo, ['ventas','clientes'], true); }
+function puedeEditar(string $modulo): bool
+{
+    return puedeVer($modulo) && in_array($modulo, permisosRoles()[$_SESSION['empleado']['rol'] ?? '']['editar'] ?? [], true);
+}
+function moduloInicial(): string { return puedeVer('dashboard') ? 'dashboard' : 'productos'; }
 function csrfValido(): bool { return hash_equals($_SESSION['csrf'], (string) ($_POST['csrf'] ?? '')); }
 function campoCsrf(): void { echo '<input type="hidden" name="csrf" value="' . escapar($_SESSION['csrf']) . '">'; }
 function ruta(string $modulo, array $params = []): string { return 'panel.php?' . http_build_query(['modulo'=>$modulo] + $params); }

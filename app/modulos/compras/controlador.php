@@ -1,7 +1,7 @@
 <?php
 // Se incluye desde sistema.php después de verificar sesión, permisos y CSRF.
 defined('ALMANICA') || exit;
-require_once __DIR__ . '/../modelos/compra.php';
+require_once __DIR__ . '/modelo.php';
 $idOrden=empty($_GET['id'])?0:entero($_GET['id'],1);
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     $operacion=(string)($_POST['accion_compra'] ?? '');

@@ -1,12 +1,13 @@
 <?php
 require_once __DIR__ . '/../../config/catalogos.php';
+require_once __DIR__ . '/../../config/roles.php';
 function opciones(PDO $db): array
 {
     return [
         'categoria'=>$db->query('SELECT Id_Categoria, Nombre FROM Categoria ORDER BY Nombre')->fetchAll(PDO::FETCH_KEY_PAIR),
         'proveedor'=>$db->query('SELECT Id_Proveedor, Nombre FROM Proveedor ORDER BY Nombre')->fetchAll(PDO::FETCH_KEY_PAIR),
         'empleado'=>$db->query('SELECT Id_Empleado, Nombre FROM Empleado ORDER BY Nombre')->fetchAll(PDO::FETCH_KEY_PAIR),
-        'rol'=>['Administrador'=>'Administrador','Vendedor'=>'Vendedor','Cajero'=>'Cajero'],
+        'rol'=>rolesDisponibles(),
         'estado'=>[1=>'Activo',0=>'Inactivo'],
     ];
 }

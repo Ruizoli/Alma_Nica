@@ -9,7 +9,12 @@
     <link href="assets/css/sistema.css" rel="stylesheet">
     <link href="assets/css/comercial.css?v=3" rel="stylesheet">
     <script src="assets/js/sistema.js?v=5" defer></script>
-<link href="assets/css/marca.css?v=1" rel="stylesheet"><script src="assets/js/busqueda.js?v=1" defer></script><link href="assets/css/mejoras.css?v=1" rel="stylesheet"><script src="assets/js/selectores.js?v=1" defer></script><link href="assets/css/selectores.css?v=1" rel="stylesheet"></head>
+<link href="assets/css/marca.css?v=1" rel="stylesheet">
+    <script src="assets/js/busqueda.js?v=1" defer></script>
+    <link href="assets/css/busqueda.css?v=2" rel="stylesheet">
+    <script src="assets/js/selectores.js?v=1" defer></script>
+    <link href="assets/css/selectores.css?v=1" rel="stylesheet">
+</head>
 <body class="sistema">
 <aside class="sidebar" id="menu-principal">
     <a class="brand" href="panel.php"><?php require __DIR__ . '/marca.php'; ?></a>
@@ -32,7 +37,7 @@
 <div class="workspace">
     <header class="topbar">
         <button class="icon-button menu-toggle" type="button" aria-label="Mostrar u ocultar menú" aria-controls="menu-principal" aria-expanded="true" data-toggle-menu><?= icono('menu') ?></button>
-        <form class="global-search" method="get" data-global-search><input type="hidden" name="modulo" value="buscar"><?= icono('buscar') ?><input name="q" type="search" aria-label="Buscar en el sistema" placeholder="Buscar productos, clientes<?= esAdmin()?', proveedores':'' ?>…" value="<?= $modulo==='buscar'?escapar($_GET['q'] ?? ''):'' ?>"><button type="submit" class="sr-only">Buscar</button></form>
+        <form class="global-search" method="get" data-global-search><input type="hidden" name="modulo" value="buscar"><?= icono('buscar') ?><input name="q" type="search" aria-label="Buscar en el sistema" placeholder="Buscar en los módulos permitidos…" value="<?= $modulo==='buscar'?escapar($_GET['q'] ?? ''):'' ?>"><button type="submit" class="sr-only">Buscar</button></form>
         <a class="notification-link" href="<?= escapar(ruta('productos',['bajo'=>1])) ?>" aria-label="Consultar productos con stock bajo"><?= icono('alertas') ?></a>
         <a class="account" href="<?= escapar(ruta('configuracion')) ?>"><span class="avatar"><?= escapar(mb_substr($_SESSION['empleado']['nombre'],0,1)) ?></span><div><strong><?= escapar($_SESSION['empleado']['nombre']) ?></strong><small><?= escapar($_SESSION['empleado']['rol']) ?></small></div><span class="account-arrow">⌄</span></a>
     </header>

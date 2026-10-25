@@ -14,7 +14,7 @@
 <body class="pagina-login">
 <div class="login-layout">
 <section class="login-intro">
-<?php require __DIR__ . "/parciales/marca.php"; ?>
+<?php require __DIR__ . '/parciales/marca.php'; ?>
 <ul class="login-benefits" aria-label="Funciones del sistema">
 <li><?= icono('ventas') ?><span>Ventas<br>más rápidas</span></li>
 <li><?= icono('productos') ?><span>Control<br>de inventario</span></li>

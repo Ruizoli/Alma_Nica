@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/operacion.php';
+require_once __DIR__ . '/../../compartido/operaciones.php';
 
 function obtenerOrden(PDO $db, int $id, bool $bloquear = false): array
 {

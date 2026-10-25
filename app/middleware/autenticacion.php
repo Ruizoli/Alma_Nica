@@ -1,7 +1,7 @@
 <?php
 // Solo se ejecuta después de inicializar la aplicación.
 defined('ALMANICA') || exit;
-require_once __DIR__ . '/../modelos/usuario.php';
+require_once __DIR__ . '/../compartido/usuario.php';
 
 if (!isset($_SESSION['empleado']['usuario_id'])) {
     header('Location: index.php');
@@ -11,7 +11,7 @@ if (!isset($_SESSION['empleado']['usuario_id'])) {
 try {
     $conexion = conectar();
     $actual = buscarUsuarioActivo($conexion, (int) $_SESSION['empleado']['usuario_id']);
-    if (!$actual || (isset($_SESSION['credencial']) && !hash_equals($_SESSION['credencial'], hash('sha256', $actual['Contrasena'])))) {
+    if (!$actual || !rolValido((string)$actual['Rol']) || (isset($_SESSION['credencial']) && !hash_equals($_SESSION['credencial'], hash('sha256', $actual['Contrasena'])))) {
         $_SESSION = [];
         session_destroy();
         header('Location: index.php');

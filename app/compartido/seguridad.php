@@ -19,7 +19,7 @@ function autenticar(PDO $db, string $usuario, string $clave, string $ip): array
         if ($espera > 0) { $db->commit(); return ['cuenta'=>false,'espera'=>$espera]; }
         $hash = $cuenta['Contrasena'] ?? '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.';
         $valida = password_verify($clave, $hash);
-        if ($valida && $cuenta && (int) $cuenta['Estado'] === 1 && (int) $cuenta['Empleado_Activo'] === 1) {
+        if ($valida && $cuenta && rolValido((string)$cuenta['Rol']) && (int) $cuenta['Estado'] === 1 && (int) $cuenta['Empleado_Activo'] === 1) {
             $q = $db->prepare('DELETE FROM LoginIntento WHERE Clave=?'); $q->execute([hash('sha256', 'cuenta:' . $identidad)]);
             $db->commit(); return ['cuenta'=>$cuenta,'espera'=>0];
         }
