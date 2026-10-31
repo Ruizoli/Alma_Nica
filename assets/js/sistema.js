@@ -8,15 +8,20 @@ if (form) {
     const money = amount => 'C$ ' + (amount / 100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
     const cents = value => Math.round(Number(value || 0) * 100);
     const update = () => {
-        let total = 0;
+        let total = 0, units = 0; const products = new Set();
         lines.querySelectorAll('.order-line').forEach(line => {
             const option = line.querySelector('select').selectedOptions[0];
             const price = form.dataset.operation === 'compra' ? cents(line.querySelector('[name="costo[]"]').value) : cents(option?.dataset.price);
             const subtotal = price * Number(line.querySelector('[name="cantidad[]"]').value || 0);
             line.querySelector('.line-subtotal').textContent = money(subtotal);
             total += subtotal;
+            if (option?.value) { products.add(option.value); units += Number(line.querySelector('[name="cantidad[]"]').value || 0); }
         });
         form.querySelector('[data-total]').textContent = money(total);
+        const productCount = form.querySelector('[data-purchase-products]');
+        const unitCount = form.querySelector('[data-purchase-units]');
+        if (productCount) productCount.textContent = products.size;
+        if (unitCount) unitCount.textContent = units.toLocaleString('es-NI');
     };
     const add = (id = '') => {
         const line = template.cloneNode(true);

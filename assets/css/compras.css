@@ -1,0 +1,69 @@
+
+.purchase-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px;border-top:4px solid #d79a23}
+.purchase-nav small{color:#0b7183;font-weight:700;letter-spacing:.08em}
+.purchase-nav h2{margin:6px 0}
+.purchase-nav .row-actions{flex-wrap:wrap}
+.purchase-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px}
+.purchase-stats a{text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.purchase-stats strong{font-size:28px;color:#123c51}
+.purchase-workspace{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:22px;align-items:start}
+.purchase-summary{position:sticky;top:95px}
+.purchase-summary p{display:flex;justify-content:space-between;gap:12px;margin:20px 0}
+.purchase-summary .purchase-total{display:block;border-top:1px solid #e3eaf0;padding:18px 0}
+.purchase-summary .purchase-total strong{display:block;font-size:28px;color:#076a80}
+.purchase-summary .muted{font-size:13px;line-height:1.7}
+@media(max-width:1100px){.purchase-workspace{grid-template-columns:1fr}.purchase-summary{position:static}.purchase-nav{align-items:flex-start;flex-direction:column}}
+@media(max-width:600px){.purchase-stats{grid-template-columns:1fr}.purchase-nav .row-actions{display:grid;width:100%}}
+@media print{.purchase-nav,.purchase-summary .button{display:none}.purchase-workspace{display:block}.purchase-summary{position:static}}
+
+.purchase-document{display:none}
+@media print{
+ @page{size:A4;margin:16mm}
+ body.sistema,.workspace,.page{background:white!important;margin:0!important;padding:0!important;display:block!important;width:auto!important}
+ .sidebar,.topbar,.app-footer,.purchase-nav,.purchase-screen,.page-heading,.notice,.alert{display:none!important}
+ .purchase-document{display:block!important;font-family:Arial,sans-serif;color:#152d40;font-size:10pt}
+ .doc-heading{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+ .doc-heading>div:last-child{text-align:right}
+ .doc-heading h1{font-size:22pt;margin:0}.doc-heading h2{font-size:14pt;color:#086a94;margin:0 0 8px}
+ .doc-brand{display:flex;align-items:center;gap:12px}.doc-brand img{width:65px;height:75px;object-fit:contain}
+ .doc-brand small{font-size:7pt}.doc-total{margin:25px 0 24px auto;width:190px;background:#eee!important;padding:14px;print-color-adjust:exact}
+ .doc-total strong{display:block;text-align:right;font-size:17pt;margin-top:12px}
+ .doc-memo{background:#eee!important;padding:12px;margin-bottom:16px;print-color-adjust:exact}
+ .purchase-document table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:9pt}
+ .purchase-document th{background:#ddd!important;color:#122c3d!important;padding:8px;text-align:left;print-color-adjust:exact}
+ .purchase-document td{padding:9px 8px;border-bottom:1px solid #ddd;white-space:normal}
+ .doc-lines td:nth-child(n+3){text-align:right}.doc-lines tr{break-inside:avoid}
+ .doc-totals{width:210px;margin-left:auto;background:#eee!important;padding:10px;print-color-adjust:exact}
+ .doc-totals p{display:flex;justify-content:space-between;margin:8px 0}
+ .doc-receipts{margin-top:40mm;font-size:9pt}.doc-receipts h3{font-size:11pt}.doc-receipts p{break-inside:avoid}
+}
+
+.purchase-title{text-align:center;margin:12px 0 28px;font-size:26px;font-weight:800;color:#133c54}
+.purchase-order-fields{display:grid;grid-template-columns:1fr 1fr 2fr;gap:18px;margin-top:20px}
+.purchase-entry{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;align-items:end;margin-top:20px}
+.purchase-entry .field{min-width:0}
+@media(max-width:1200px){.purchase-entry{grid-template-columns:2fr 1fr}.purchase-order-fields{grid-template-columns:1fr}}
+@media(max-width:600px){.purchase-entry{grid-template-columns:1fr}}
+
+/* Gestión e historial: navegación única y resumen lateral. */
+.purchase-management{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:22px;align-items:start}
+.purchase-overview h3{font-size:17px}.purchase-overview p{color:#647787;line-height:1.7;font-size:13px}
+.purchase-stats-side{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0}
+.purchase-stats-side .card-box{padding:18px;box-shadow:none;border:1px solid #e3e9ee;background:#f7fafc}
+.purchase-stats-side strong{font-size:22px}
+.purchase-management .filterbar{background:#fff8e5;padding:16px;border-radius:10px;border-left:4px solid #d6a52e}
+.purchase-nav{padding:18px 24px}.purchase-nav h2{font-size:18px}
+@media(max-width:1150px){.purchase-management{grid-template-columns:1fr}.purchase-stats-side{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.purchase-stats-side{grid-template-columns:1fr}}
+@media print{
+ @page{size:A4;margin:0}
+ .purchase-document{padding:16mm 14mm!important;font-size:9pt}
+ .doc-heading h1{font-size:19pt}.doc-heading h2{font-size:12pt}
+ .doc-brand img{width:55px;height:60px}.doc-brand small{font-size:6pt}
+ .doc-total{width:170px;margin-top:22px;margin-bottom:22px;padding:12px}
+ .doc-total strong{font-size:15pt}
+ .purchase-document table{font-size:8pt}.purchase-document th,.purchase-document td{padding:7px}
+ .doc-totals{width:190px;font-size:9pt}
+ .doc-receipts{margin-top:45mm;font-size:8pt}
+ .doc-heading,.doc-total,.doc-totals{break-inside:avoid}
+}

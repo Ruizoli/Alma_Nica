@@ -3,12 +3,13 @@ function lineasOperacion(array $post, bool $compra): array
 {
     $ids = $post['producto'] ?? []; $cantidades = $post['cantidad'] ?? []; $costos = $post['costo'] ?? [];
     if (!is_array($ids) || count($ids) < 1 || count($ids) > 100) { throw new InvalidArgumentException('Agrega entre 1 y 100 productos.'); }
+    if ($compra && isset($post['precio_venta']) && !is_array($post['precio_venta'])) throw new InvalidArgumentException('Revisa los precios de venta.');
     $lineas = [];
     foreach ($ids as $i=>$valor) {
         if ($valor === '') { continue; }
         $id = entero($valor, 1); $cantidad = entero($cantidades[$i] ?? '', 1);
         if (isset($lineas[$id])) { throw new InvalidArgumentException('Un producto está repetido. Agrupa su cantidad en una sola fila.'); }
-        $lineas[$id] = ['cantidad'=>$cantidad, 'costo'=>$compra ? centavos((string) ($costos[$i] ?? '')) : 0];
+        $lineas[$id] = ['cantidad'=>$cantidad, 'venta'=>$compra && isset($post['precio_venta'][$i]) ? centavos((string)$post['precio_venta'][$i]) : null, 'costo'=>$compra ? centavos((string) ($costos[$i] ?? '')) : 0];
     }
     if (!$lineas) { throw new InvalidArgumentException('Agrega al menos un producto.'); }
     ksort($lineas); return $lineas;
@@ -22,6 +23,7 @@ function crearOperacion(PDO $db, bool $compra, array $post, int $empleado): int
             $q = $db->prepare('SELECT * FROM Producto WHERE Id_Producto=? FOR UPDATE'); $q->execute([$id]); $producto = $q->fetch();
             if (!$producto) { throw new InvalidArgumentException('Uno de los productos ya no existe.'); }
             if (!$compra && (int) $producto['Stock_Actual'] < $linea['cantidad']) { throw new InvalidArgumentException('Stock insuficiente para ' . $producto['Nombre'] . '.'); }
+            $linea['venta'] ??= centavos($producto['Precio_Venta']);
             $linea['precio'] = $compra ? $linea['costo'] : centavos($producto['Precio_Venta']);
             $total += $linea['cantidad'] * $linea['precio'];
             if ($total > 9999999999) { throw new InvalidArgumentException('El importe supera el máximo permitido.'); }
@@ -40,6 +42,7 @@ function crearOperacion(PDO $db, bool $compra, array $post, int $empleado): int
         foreach ($lineas as $id=>$linea) {
             $sql = $compra ? 'INSERT INTO Detalle_OrdenCompra (Id_OrdenCompra,Id_Producto,Cantidad,Precio_Costo) VALUES (?,?,?,?)' : 'INSERT INTO Detalle_Venta (Id_Venta,Id_Producto,Cantidad,Precio_Unitario) VALUES (?,?,?,?)';
             $q = $db->prepare($sql); $q->execute([$idOperacion,$id,$linea['cantidad'],decimal($linea['precio'])]);
+            if ($compra) { $q=$db->prepare('UPDATE Detalle_OrdenCompra SET Precio_Venta_Referencia=? WHERE Id_OrdenCompra=? AND Id_Producto=?'); $q->execute([decimal($linea['venta']),$idOperacion,$id]); }
             if (!$compra) { $q = $db->prepare('UPDATE Producto SET Stock_Actual=Stock_Actual-? WHERE Id_Producto=?'); $q->execute([$linea['cantidad'],$id]); }
         }
         $db->commit(); return $idOperacion;

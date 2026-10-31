@@ -8,12 +8,14 @@
     <link href="assets/css/estilos.css" rel="stylesheet">
     <link href="assets/css/sistema.css" rel="stylesheet">
     <link href="assets/css/comercial.css?v=3" rel="stylesheet">
-    <script src="assets/js/sistema.js?v=5" defer></script>
+    <script src="assets/js/sistema.js?v=6" defer></script>
 <link href="assets/css/marca.css?v=1" rel="stylesheet">
     <script src="assets/js/busqueda.js?v=1" defer></script>
     <link href="assets/css/busqueda.css?v=2" rel="stylesheet">
-    <script src="assets/js/selectores.js?v=1" defer></script>
+    <script src="assets/js/selectores.js?v=2" defer></script>
     <link href="assets/css/selectores.css?v=1" rel="stylesheet">
+<?php if (in_array($modulo,['compras','recepcion','historial'],true)): ?><link href="assets/css/compras.css?v=4" rel="stylesheet"><?php endif; ?>
+<script src="assets/js/compras.js?v=1" defer></script>
 </head>
 <body class="sistema">
 <aside class="sidebar" id="menu-principal">

@@ -27,6 +27,8 @@ try {
     $db->exec(file_get_contents(__DIR__ . '/../database/001_seguridad.sql'));
     $db->exec(file_get_contents(__DIR__ . '/../database/002_imagenes_recepciones.sql'));
     $db->exec(file_get_contents(__DIR__ . '/../database/003_rol_inventarista.sql'));
+    $db->exec(file_get_contents(__DIR__ . '/../database/004_cierre_reversion.sql'));
+    $db->exec(file_get_contents(__DIR__ . '/../database/005_precio_venta_orden.sql'));
     $db->exec("INSERT INTO Empleado (Nombre) VALUES ('Administrador de prueba')"); $empleado=(int)$db->lastInsertId();
     $q=$db->prepare('INSERT INTO Usuario (Id_Empleado,Usuario,Contrasena,Rol) VALUES (?,?,?,?)'); $q->execute([$empleado,'admin_test',password_hash('Prueba-Segura-2026!',PASSWORD_DEFAULT),'Administrador']); $admin=(int)$db->lastInsertId();
     $_SESSION=['empleado'=>['id'=>$empleado,'usuario_id'=>$admin,'rol'=>'Administrador']];
@@ -100,6 +102,37 @@ try {
     comprobar(obtenerPerfil($db,$admin)['Nombre']==='Nombre actualizado','duplicado no altera perfil');
     rechaza(fn()=>guardarPerfil($db,$admin,'a','Nombre'),'usuario demasiado corto');
     guardarPerfil($db,$admin,'admin_test','Administrador de prueba');
+function ok($v,$m){if(!$v)throw new Exception($m);echo "OK $m\n";}
+function no($f){try{$f();}catch(InvalidArgumentException $e){return;}throw new Exception('Debió rechazar');}
+$e=(int)$db->query('SELECT Id_Empleado FROM Empleado LIMIT 1')->fetchColumn();
+$p=(int)$db->query('SELECT Id_Proveedor FROM Proveedor LIMIT 1')->fetchColumn();
+$x=(int)$db->query('SELECT Id_Producto FROM Producto LIMIT 1')->fetchColumn();
+$o=crearOperacion($db,true,['proveedor'=>$p,'producto'=>[$x],'cantidad'=>[3],'costo'=>['10']],$e);
+$l=lineasOrden($db,$o)[0];
+$r=recibirOrden($db,$o,['fecha'=>date('Y-m-d'),'recibida'=>[$l['Id_Detalle_Orden']=>3]],$e,bin2hex(random_bytes(24)));
+$stock=(int)$db->query("SELECT Stock_Actual FROM Producto WHERE Id_Producto=$x")->fetchColumn();
+$db->exec("UPDATE Producto SET Stock_Actual=0 WHERE Id_Producto=$x");
+no(fn()=>revertirRecepcion($db,$o,$r,$e,'Prueba sin stock'));
+ok((int)$db->query("SELECT COUNT(*) FROM CompraReversion WHERE Id_Recepcion=$r")->fetchColumn()===0,'rollback sin stock');
+$db->exec("UPDATE Producto SET Stock_Actual=$stock WHERE Id_Producto=$x");
+revertirRecepcion($db,$o,$r,$e,'Devolución de prueba');
+ok((int)$db->query("SELECT Stock_Actual FROM Producto WHERE Id_Producto=$x")->fetchColumn()===$stock-3,'descuento exacto');
+ok((int)lineasOrden($db,$o)[0]['Recibida']===0,'pendientes recalculados');
+no(fn()=>revertirRecepcion($db,$o,$r,$e,'Repetida'));
+ok(count(recepcionesOrden($db,$o))===1,'historial conservado');
+cerrarOrden($db,$o,$e,'No llegará el pedido');
+ok(obtenerOrden($db,$o)['Estado']==='Cerrada','cerrar orden');
+no(fn()=>cerrarOrden($db,$o,$e,'Repetida'));
+no(fn()=>recibirOrden($db,$o,['fecha'=>date('Y-m-d'),'recibida'=>[$l['Id_Detalle_Orden']=>3]],$e,bin2hex(random_bytes(24))));
+echo "OK cierre impide recepción\n";
+
+
+    $ordenPrecio=crearOperacion($db,true,['proveedor'=>$p,'producto'=>[$x],'cantidad'=>[2],'costo'=>['12.50'],'precio_venta'=>['19.75']],$e);
+    comprobar(lineasOrden($db,$ordenPrecio)[0]['Precio_Venta_Referencia']==='19.75','guardar precio venta de referencia');
+    editarOrden($db,$ordenPrecio,['proveedor'=>$p,'producto'=>[$x],'cantidad'=>[3],'costo'=>['13.50'],'precio_venta'=>['20.25']]);
+    comprobar(lineasOrden($db,$ordenPrecio)[0]['Precio_Venta_Referencia']==='20.25','editar precio venta de referencia');
+    comprobar(obtenerOrden($db,$ordenPrecio)['Total']==='40.50','total usa precio compra');
+    rechaza(fn()=>lineasOperacion(['producto'=>[$x],'cantidad'=>[1],'costo'=>['1'],'precio_venta'=>['-2']],true),'rechazar precio venta negativo');
     echo 'BASE_PRUEBAS=' . $nombre . "\n";
     if (getenv('ALMANICA_KEEP_TEST_DB') !== '1') { $origen->exec("DROP DATABASE `$nombre`"); echo "Base temporal eliminada.\n"; }
 } catch (Throwable $e) { $origen->exec("DROP DATABASE `$nombre`"); throw $e; }

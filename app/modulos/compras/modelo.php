@@ -12,8 +12,8 @@ function obtenerOrden(PDO $db, int $id, bool $bloquear = false): array
 
 function lineasOrden(PDO $db, int $id): array
 {
-    $q = $db->prepare('SELECT d.*, p.Nombre, p.Codigo, p.Imagen,
-        COALESCE((SELECT SUM(r.Cantidad) FROM Detalle_Recepcion r WHERE r.Id_Detalle_Orden=d.Id_Detalle_Orden),0) AS Recibida
+    $q = $db->prepare('SELECT d.*, p.Nombre, p.Codigo, p.Imagen, p.Precio_Venta AS Precio_Venta_Actual,
+        COALESCE((SELECT SUM(r.Cantidad) FROM Detalle_Recepcion r WHERE r.Id_Detalle_Orden=d.Id_Detalle_Orden AND NOT EXISTS (SELECT 1 FROM CompraReversion rv WHERE rv.Id_Recepcion=r.Id_Recepcion)),0) AS Recibida
         FROM Detalle_OrdenCompra d JOIN Producto p ON p.Id_Producto=d.Id_Producto
         WHERE d.Id_OrdenCompra=? ORDER BY d.Id_Producto');
     $q->execute([$id]);
@@ -24,7 +24,7 @@ function listarOrdenes(PDO $db, string $estado, string $buscar, int $pagina): ar
 {
     $where=[]; $params=[];
     if ($estado !== '') {
-        if (!in_array($estado,['Pendiente','Completada','Cancelada'],true)) throw new InvalidArgumentException('Filtro de estado no válido.');
+        if (!in_array($estado,['Pendiente','Completada','Cancelada','Cerrada'],true)) throw new InvalidArgumentException('Filtro de estado no válido.');
         $where[]='o.Estado=?'; $params[]=$estado;
     }
     if ($buscar !== '') {
@@ -35,7 +35,7 @@ function listarOrdenes(PDO $db, string $estado, string $buscar, int $pagina): ar
     $base=' FROM OrdenCompra o JOIN Proveedor p ON p.Id_Proveedor=o.Id_Proveedor';
     $q=$db->prepare('SELECT COUNT(*)'.$base.$filtro); $q->execute($params); $total=(int)$q->fetchColumn();
     $paginas=max(1,(int)ceil($total/10)); $pagina=min(max(1,$pagina),$paginas); $offset=($pagina-1)*10;
-    $q=$db->prepare('SELECT o.*,p.Nombre AS Proveedor,(SELECT COUNT(*) FROM RecepcionCompra r WHERE r.Id_OrdenCompra=o.Id_OrdenCompra) AS Recepciones'.$base.$filtro." ORDER BY o.Id_OrdenCompra DESC LIMIT 10 OFFSET $offset");
+    $q=$db->prepare('SELECT o.*,p.Nombre AS Proveedor,(SELECT COUNT(*) FROM RecepcionCompra r WHERE r.Id_OrdenCompra=o.Id_OrdenCompra AND NOT EXISTS (SELECT 1 FROM CompraReversion rv WHERE rv.Id_Recepcion=r.Id_Recepcion)) AS Recepciones'.$base.$filtro." ORDER BY o.Id_OrdenCompra DESC LIMIT 10 OFFSET $offset");
     $q->execute($params);
     return ['filas'=>$q->fetchAll(),'total'=>$total,'pagina'=>$pagina,'paginas'=>$paginas];
 }
@@ -59,7 +59,12 @@ function editarOrden(PDO $db, int $id, array $post): void
         }
         $q=$db->prepare('DELETE FROM Detalle_OrdenCompra WHERE Id_OrdenCompra=?'); $q->execute([$id]);
         $q=$db->prepare('INSERT INTO Detalle_OrdenCompra (Id_OrdenCompra,Id_Producto,Cantidad,Precio_Costo) VALUES (?,?,?,?)');
-        foreach ($lineas as $producto=>$linea) $q->execute([$id,$producto,$linea['cantidad'],decimal($linea['costo'])]);
+        foreach ($lineas as $producto=>$linea) {
+            $q->execute([$id,$producto,$linea['cantidad'],decimal($linea['costo'])]);
+            $precio=$linea['venta'];
+            if ($precio===null) { $consulta=$db->prepare('SELECT Precio_Venta FROM Producto WHERE Id_Producto=?'); $consulta->execute([$producto]); $precio=centavos($consulta->fetchColumn()); }
+            $guardar=$db->prepare('UPDATE Detalle_OrdenCompra SET Precio_Venta_Referencia=? WHERE Id_OrdenCompra=? AND Id_Producto=?'); $guardar->execute([decimal($precio),$id,$producto]);
+        }
         $q=$db->prepare('UPDATE OrdenCompra SET Id_Proveedor=?,Total=? WHERE Id_OrdenCompra=?'); $q->execute([$proveedor,decimal($total),$id]);
         $db->commit();
     } catch (Throwable $e) { $db->rollBack(); throw $e; }
@@ -124,7 +129,7 @@ function recibirOrden(PDO $db, int $id, array $post, int $empleado, string $toke
 
 function recepcionesOrden(PDO $db, int $id): array
 {
-    $q=$db->prepare('SELECT r.*,e.Nombre AS Empleado,(SELECT SUM(d.Cantidad) FROM Detalle_Recepcion d WHERE d.Id_Recepcion=r.Id_Recepcion) AS Unidades FROM RecepcionCompra r JOIN Empleado e ON e.Id_Empleado=r.Id_Empleado WHERE r.Id_OrdenCompra=? ORDER BY r.Id_Recepcion DESC');
+    $q=$db->prepare('SELECT r.*,(SELECT rv.Motivo FROM CompraReversion rv WHERE rv.Id_Recepcion=r.Id_Recepcion) AS Reversion,e.Nombre AS Empleado,(SELECT SUM(d.Cantidad) FROM Detalle_Recepcion d WHERE d.Id_Recepcion=r.Id_Recepcion) AS Unidades FROM RecepcionCompra r JOIN Empleado e ON e.Id_Empleado=r.Id_Empleado WHERE r.Id_OrdenCompra=? ORDER BY r.Id_Recepcion DESC');
     $q->execute([$id]); $recepciones=$q->fetchAll();
     $q=$db->prepare('SELECT d.Id_Recepcion,d.Cantidad,p.Nombre FROM Detalle_Recepcion d JOIN RecepcionCompra r ON r.Id_Recepcion=d.Id_Recepcion JOIN Detalle_OrdenCompra o ON o.Id_Detalle_Orden=d.Id_Detalle_Orden JOIN Producto p ON p.Id_Producto=o.Id_Producto WHERE r.Id_OrdenCompra=? ORDER BY d.Id_Detalle_Recepcion');
     $q->execute([$id]); $detalles=[];
@@ -141,6 +146,49 @@ function historialRecepciones(PDO $db, int $pagina, string $busqueda = ''): arra
     $params=$busqueda===''?[]:['%'.$busqueda.'%'];
     $q=$db->prepare('SELECT COUNT(*)'.$from.$where); $q->execute($params); $total=(int)$q->fetchColumn();
     $paginas=max(1,(int)ceil($total/10)); $pagina=min(max(1,$pagina),$paginas); $offset=($pagina-1)*10;
-    $q=$db->prepare('SELECT r.*,p.Nombre AS Proveedor,e.Nombre AS Empleado,(SELECT SUM(d.Cantidad) FROM Detalle_Recepcion d WHERE d.Id_Recepcion=r.Id_Recepcion) AS Unidades'.$from.$where.' ORDER BY r.Id_Recepcion DESC LIMIT 10 OFFSET '.$offset); $q->execute($params);
+    $q=$db->prepare('SELECT r.*,(SELECT rv.Motivo FROM CompraReversion rv WHERE rv.Id_Recepcion=r.Id_Recepcion) AS Reversion,p.Nombre AS Proveedor,e.Nombre AS Empleado,(SELECT SUM(d.Cantidad) FROM Detalle_Recepcion d WHERE d.Id_Recepcion=r.Id_Recepcion) AS Unidades,(SELECT COALESCE(SUM(dr.Cantidad * dc.Precio_Costo),0) FROM Detalle_Recepcion dr JOIN Detalle_OrdenCompra dc ON dc.Id_Detalle_Orden=dr.Id_Detalle_Orden WHERE dr.Id_Recepcion=r.Id_Recepcion) AS Total_Recibido'.$from.$where.' ORDER BY r.Id_Recepcion DESC LIMIT 10 OFFSET '.$offset); $q->execute($params);
     return ['filas'=>$q->fetchAll(),'total'=>$total,'pagina'=>$pagina,'paginas'=>$paginas];
+}
+
+
+function cerrarOrden(PDO $db, int $id, int $empleado, string $motivo): void
+{
+    $motivo=trim($motivo);
+    if ($motivo==='' || mb_strlen($motivo)>500) throw new InvalidArgumentException('Indica un motivo de hasta 500 caracteres.');
+    $db->beginTransaction();
+    try {
+        $orden=obtenerOrden($db,$id,true);
+        if ($orden['Estado']!=='Pendiente') throw new InvalidArgumentException('Solo puedes cerrar una orden pendiente.');
+        $q=$db->prepare('INSERT INTO OrdenCierre (Id_OrdenCompra,Id_Empleado,Motivo) VALUES (?,?,?)');
+        $q->execute([$id,$empleado,$motivo]);
+        $q=$db->prepare("UPDATE OrdenCompra SET Estado='Cerrada' WHERE Id_OrdenCompra=?"); $q->execute([$id]);
+        $db->commit();
+    } catch (Throwable $e) { $db->rollBack(); throw $e; }
+}
+
+function revertirRecepcion(PDO $db, int $idOrden, int $idRecepcion, int $empleado, string $motivo): void
+{
+    $motivo=trim($motivo);
+    if ($motivo==='' || mb_strlen($motivo)>500) throw new InvalidArgumentException('Indica un motivo de hasta 500 caracteres.');
+    $db->beginTransaction();
+    try {
+        $orden=obtenerOrden($db,$idOrden,true);
+        if (!in_array($orden['Estado'],['Pendiente','Completada'],true)) throw new InvalidArgumentException('No se puede revertir una recepción de una orden cerrada o cancelada.');
+        $q=$db->prepare('SELECT Id_Recepcion FROM RecepcionCompra WHERE Id_Recepcion=? AND Id_OrdenCompra=? FOR UPDATE');
+        $q->execute([$idRecepcion,$idOrden]);
+        if (!$q->fetchColumn()) throw new InvalidArgumentException('La recepción no pertenece a esta orden.');
+        $q=$db->prepare('SELECT COUNT(*) FROM CompraReversion WHERE Id_Recepcion=?'); $q->execute([$idRecepcion]);
+        if ($q->fetchColumn()) throw new InvalidArgumentException('Esta recepción ya fue revertida.');
+        $q=$db->prepare('SELECT o.Id_Producto,SUM(d.Cantidad) AS Cantidad FROM Detalle_Recepcion d JOIN Detalle_OrdenCompra o ON o.Id_Detalle_Orden=d.Id_Detalle_Orden WHERE d.Id_Recepcion=? GROUP BY o.Id_Producto ORDER BY o.Id_Producto');
+        $q->execute([$idRecepcion]); $lineas=$q->fetchAll();
+        if (!$lineas) throw new InvalidArgumentException('La recepción no tiene detalle para revertir.');
+        foreach ($lineas as $linea) {
+            $q=$db->prepare('SELECT Stock_Actual FROM Producto WHERE Id_Producto=? FOR UPDATE'); $q->execute([$linea['Id_Producto']]);
+            if ((int)$q->fetchColumn()<(int)$linea['Cantidad']) throw new InvalidArgumentException('No hay stock suficiente para revertir esta recepción. Revisa las ventas posteriores.');
+            $q=$db->prepare('UPDATE Producto SET Stock_Actual=Stock_Actual-? WHERE Id_Producto=?'); $q->execute([$linea['Cantidad'],$linea['Id_Producto']]);
+        }
+        $q=$db->prepare('INSERT INTO CompraReversion (Id_Recepcion,Id_Empleado,Motivo) VALUES (?,?,?)'); $q->execute([$idRecepcion,$empleado,$motivo]);
+        $q=$db->prepare("UPDATE OrdenCompra SET Estado='Pendiente' WHERE Id_OrdenCompra=?"); $q->execute([$idOrden]);
+        $db->commit();
+    } catch (Throwable $e) { $db->rollBack(); throw $e; }
 }

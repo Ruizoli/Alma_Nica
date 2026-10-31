@@ -1,4 +1,9 @@
 <?php
+// Variables preparadas por el sistema antes de incluir este archivo.
+/** @var PDO $conexion */
+/** @var string $modulo */
+/** @var string $accion */
+
 // Se incluye desde sistema.php después de verificar sesión, permisos y CSRF.
 defined('ALMANICA') || exit;
 require_once __DIR__ . '/modelo.php';
@@ -6,6 +11,13 @@ $idOrden=empty($_GET['id'])?0:entero($_GET['id'],1);
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     $operacion=(string)($_POST['accion_compra'] ?? '');
     $idPost=empty($_POST['id_orden'])?0:entero($_POST['id_orden'],1);
+    if (in_array($operacion,['cerrar','revertir'],true)) {
+        if ($modulo!=='compras' || !esAdmin()) { http_response_code(403); throw new InvalidArgumentException('Solo el administrador puede cerrar o revertir compras.'); }
+        if ($operacion==='cerrar') cerrarOrden($conexion,$idPost,(int)$_SESSION['empleado']['id'],(string)($_POST['motivo'] ?? ''));
+        else revertirRecepcion($conexion,$idPost,entero($_POST['id_recepcion'] ?? '',1),(int)$_SESSION['empleado']['id'],(string)($_POST['motivo'] ?? ''));
+        $_SESSION['mensaje']=$operacion==='cerrar'?'Orden cerrada. Se conserva lo recibido.':'Recepción revertida. Stock actualizado y orden pendiente.';
+        header('Location: '.ruta('compras',['id'=>$idPost])); exit;
+    }
     if ($operacion==='cancelar') {
         cancelarOrden($conexion,$idPost);
         volver('compras','Orden cancelada.');

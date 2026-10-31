@@ -2,7 +2,7 @@
 // Mejora progresiva: PHP sigue recibiendo los identificadores del select original.
 (() => {
     let sequence = 0;
-    const names = new Set(['proveedor', 'cliente', 'producto[]', 'Id_Proveedor', 'Id_Categoria', 'Id_Empleado']);
+    const names = new Set(['producto_editor', 'proveedor', 'cliente', 'producto[]', 'Id_Proveedor', 'Id_Categoria', 'Id_Empleado']);
     const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
     function enhance(select) {
         if (select.dataset.searchReady || !names.has(select.name) || select.form?.method !== 'post') return;
