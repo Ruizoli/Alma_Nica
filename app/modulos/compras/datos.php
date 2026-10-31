@@ -8,7 +8,9 @@
 defined('ALMANICA') || exit;
 
 require_once __DIR__ . '/modelo.php';
+require_once __DIR__ . '/esquema.php';
 try {
+    comprobarEsquemaCompras($conexion);
     $resumenCompras = $conexion->query("SELECT Estado, COUNT(*) AS Cantidad FROM OrdenCompra GROUP BY Estado")->fetchAll(PDO::FETCH_KEY_PAIR);
     $idOrden=empty($_GET['id'])?0:entero($_GET['id'],1);
     $orden=$idOrden?obtenerOrden($conexion,$idOrden):null;

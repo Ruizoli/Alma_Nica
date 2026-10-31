@@ -37,9 +37,11 @@ function errorBase(PDOException $e): string
 {
     error_log($e->getMessage());
     return match ((int) ($e->errorInfo[1] ?? 0)) {
+        1146, 1054 => 'Falta una tabla o columna. Ejecuta en la terminal: php database/actualizar_compras.php',
+        1064 => 'La base rechazó una consulta por sintaxis. Revisa la versión de MySQL/MariaDB y el registro de errores.',
         1062 => 'Ya existe un registro con ese código, usuario o cédula.',
         1451 => 'No se puede eliminar: este registro está relacionado con otras operaciones.',
         1452 => 'El registro relacionado ya no está disponible. Actualiza la página.',
-        default => 'No se pudo guardar la operación. Intenta nuevamente.',
+        default => 'No se pudo consultar o guardar la información. Revisa el registro de errores del servidor.',
     };
 }
