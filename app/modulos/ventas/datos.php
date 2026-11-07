@@ -12,23 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_GET['accion'] ?? '') === 'guard
         throw new InvalidArgumentException('Este formulario ya se procesó o venció. Abre una nueva operación.'); 
     }
 
-    // Capturar si se presionó "registrar" o "facturar"
-// Capturar si se presionó "registrar" o "facturar" 
-        $accionTipo = $_POST['accion_tipo'] ?? 'registrar';
+    // Si el detalle tradicional viaja vacío, lo rescatamos del JSON del carrito
+    if (empty($_POST['detalle']) && !empty($_POST['detalle_json'])) {
+        $decodificado = json_decode((string) $_POST['detalle_json'], true);
+        if (is_array($decodificado)) {
+            $_POST['detalle'] = $decodificado;
+        }
+    }
 
-    // ... (aquí se ejecuta crearOperacion como ya lo tienes) ...
-    $nuevoId = crearOperacion($conexion, false, $_POST, (int) $_SESSION['empleado']['id']);
-
-    unset($_SESSION['operaciones'][$token]);
-    $_SESSION['mensaje'] = 'Venta #' . $nuevoId . ' registrada correctamente.';
-
-    // Redirección inteligente según el botón seleccionado
-    if ($accionTipo === 'facturar') {
-    header('Location: ' . ruta($modulo, ['accion' => 'detalle', 'id' => $nuevoId]));
-     } else {
-        header('Location: ' . ruta($modulo, ['id' => $nuevoId])); 
-     }
-    exit;
     // MAPEO OBLIGATORIO: Transformamos 'detalle' al formato exacto que 'lineasOperacion' exige ($_POST['producto'] y $_POST['cantidad'])
     if (!empty($_POST['detalle']) && is_array($_POST['detalle'])) {
         $_POST['producto'] = [];
@@ -57,22 +48,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_GET['accion'] ?? '') === 'guard
     unset($_SESSION['operaciones'][$token]);
     $_SESSION['mensaje'] = 'Venta #' . $nuevoId . ' registrada correctamente.';
     
-    // Redirección inteligente según el botón seleccionado
-    if ($accionTipo === 'facturar') {
-        header('Location: ' . ruta($modulo, ['accion' => 'detalle', 'id' => $nuevoId]));
-    } else {
-        header('Location: ' . ruta($modulo, ['id' => $nuevoId])); 
-    }
+    // Redirigir directamente al detalle/factura de la venta recién creada
+    header('Location: ' . ruta($modulo, ['id' => $nuevoId])); 
     exit;
 }
 
-// 2. PREPARACIÓN DE DATOS PARA LA VISTA (GET / Cargar catálogo, clientes e historial)
+// 2. PREPARACIÓN DE DATOS PARA LA VISTA (GET)
 $vista = 'ventas'; 
+
 try {
-    $productos = $conexion->query('SELECT Id_Producto, Codigo, Nombre, Precio_Venta, Stock_Actual, Imagen FROM Producto ORDER BY Nombre')->fetchAll();
-    $terceros = $conexion->query('SELECT Id_Cliente AS id, Nombre FROM Cliente ORDER BY Nombre')->fetchAll();
-    $listado = historialOperaciones($conexion, false, max(1, (int) ($_GET['pagina'] ?? 1)), trim((string)($_GET['q'] ?? '')));
-    $detalle = empty($_GET['id']) ? [] : detalleOperacion($conexion, false, entero($_GET['id'], 1));
+    $idVenta = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+    // Si viene un ID en la URL, cargamos el detalle y forzamos la vista de factura
+    if ($idVenta > 0) {
+        $detalle = detalleOperacion($conexion, false, $idVenta);
+        $vista = 'detalle'; // Forzamos a que AlmaNica cargue detalle.php o muestre la factura
+    } else {
+        $detalle = [];
+        $productos = $conexion->query('SELECT Id_Producto, Codigo, Nombre, Precio_Venta, Stock_Actual, Imagen FROM Producto ORDER BY Nombre')->fetchAll();
+        $terceros = $conexion->query('SELECT Id_Cliente AS id, Nombre FROM Cliente ORDER BY Nombre')->fetchAll();
+        $listado = historialOperaciones($conexion, false, max(1, (int) ($_GET['pagina'] ?? 1)), trim((string)($_GET['q'] ?? '')));
+    }
+
     $tokenOperacion = bin2hex(random_bytes(24));
     
     if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') !== 'fetch') {

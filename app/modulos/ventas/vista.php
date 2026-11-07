@@ -31,7 +31,6 @@ window.agregarAlCarrito = function(id, nombre, precio, stock) {
     }
     window.guardarCarritoLocal();
     window.renderizarCarrito();
-    
 };
 
 window.cambiarCantidad = function(id, cantidad) {
@@ -66,6 +65,7 @@ window.renderizarCarrito = function() {
     let contenedor = document.getElementById('contenedor-items-carrito');
     let totalEstimadoEl = document.getElementById('total-estimado');
     let btnRegistrar = document.getElementById('btn-registrar');
+    let btnFacturar = document.getElementById('btn-facturar');
     let contenedorInputs = document.getElementById('inputs-ocultos-detalle');
     let campoJson = document.getElementById('detalle-json');
     
@@ -81,6 +81,7 @@ window.renderizarCarrito = function() {
             </div>`;
         if (totalEstimadoEl) totalEstimadoEl.innerText = 'C$ 0.00';
         if (btnRegistrar) btnRegistrar.disabled = true;
+        if (btnFacturar) btnFacturar.disabled = true;
         if (campoJson) campoJson.value = '';
         return;
     }
@@ -131,6 +132,7 @@ window.renderizarCarrito = function() {
 
     if (totalEstimadoEl) totalEstimadoEl.innerText = 'C$ ' + totalGeneral.toFixed(2);
     if (btnRegistrar) btnRegistrar.disabled = false;
+    if (btnFacturar) btnFacturar.disabled = false;
 };
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -144,6 +146,9 @@ document.addEventListener("DOMContentLoaded", function() {
     <?php if (!empty($tokenOperacion)): ?>
         <input type="hidden" name="operacion_token" value="<?= escapar($tokenOperacion) ?>">
     <?php endif; ?>
+
+    <!-- Campo oculto para detectar el tipo de acción -->
+    <input type="hidden" name="accion_tipo" id="accion-tipo-input" value="registrar">
 
     <!-- Contenedores de respaldo para el detalle -->
     <div id="inputs-ocultos-detalle"></div>
@@ -254,9 +259,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     <span class="fs-4 fw-bold text-warning-emphasis" id="total-estimado">C$ 0.00</span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 shadow-sm" id="btn-registrar" disabled>
-                    <i class="bi bi-check-circle-fill me-2"></i>Registrar venta
-                </button>
+                <!-- Dos botones de acción: Registrar y Facturar -->
+                <div class="d-flex gap-2">
+                    <button type="submit" onclick="document.getElementById('accion-tipo-input').value='registrar';" class="btn btn-primary btn-lg w-50 fw-bold rounded-3 shadow-sm" id="btn-registrar" disabled>
+                        <i class="bi bi-check-circle-fill me-1"></i>Registrar
+                    </button>
+                    <button type="submit" onclick="document.getElementById('accion-tipo-input').value='facturar';" class="btn btn-success btn-lg w-50 fw-bold rounded-3 shadow-sm" id="btn-facturar" disabled>
+                        <i class="bi bi-receipt me-1"></i>Facturar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -322,20 +333,21 @@ function validarEnvioVenta(e) {
     // Forzamos el renderizado de los inputs ocultos y del JSON
     window.renderizarCarrito();
 
-    let btn = document.getElementById('btn-registrar');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando venta...';
+    let btnReg = document.getElementById('btn-registrar');
+    let btnFac = document.getElementById('btn-facturar');
+    if (btnReg) btnReg.disabled = true;
+    if (btnFac) btnFac.disabled = true;
     
-    // Permitimos el envío nativo del formulario hacia XAMPP
     return true;
 }
+
 document.addEventListener("DOMContentLoaded", function() {
     let inputBuscar = document.getElementById('buscar-producto');
     if (inputBuscar) {
         inputBuscar.addEventListener('input', function(e) {
             let valor = e.target.value.toLowerCase().trim();
             let items = document.querySelectorAll('.producto-item');
-            items.forEach(item => {
+            items.items.forEach ? items.forEach(item => {
                 let nombre = item.getAttribute('data-nombre');
                 let codigo = item.getAttribute('data-codigo');
                 if (nombre.includes(valor) || codigo.includes(valor)) {
@@ -343,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     item.style.display = 'none';
                 }
-            });
+            }) : null;
         });
     }
 });
