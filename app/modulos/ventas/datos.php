@@ -12,14 +12,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_GET['accion'] ?? '') === 'guard
         throw new InvalidArgumentException('Este formulario ya se procesó o venció. Abre una nueva operación.'); 
     }
 
-    // Si el detalle tradicional viaja vacío, lo rescatamos del JSON del carrito
-    if (empty($_POST['detalle']) && !empty($_POST['detalle_json'])) {
-        $decodificado = json_decode((string) $_POST['detalle_json'], true);
-        if (is_array($decodificado)) {
-            $_POST['detalle'] = $decodificado;
-        }
-    }
+    // Capturar si se presionó "registrar" o "facturar"
+// Capturar si se presionó "registrar" o "facturar" 
+        $accionTipo = $_POST['accion_tipo'] ?? 'registrar';
 
+    // ... (aquí se ejecuta crearOperacion como ya lo tienes) ...
+    $nuevoId = crearOperacion($conexion, false, $_POST, (int) $_SESSION['empleado']['id']);
+
+    unset($_SESSION['operaciones'][$token]);
+    $_SESSION['mensaje'] = 'Venta #' . $nuevoId . ' registrada correctamente.';
+
+    // Redirección inteligente según el botón seleccionado
+    if ($accionTipo === 'facturar') {
+    header('Location: ' . ruta($modulo, ['accion' => 'detalle', 'id' => $nuevoId]));
+     } else {
+        header('Location: ' . ruta($modulo, ['id' => $nuevoId])); 
+     }
+    exit;
     // MAPEO OBLIGATORIO: Transformamos 'detalle' al formato exacto que 'lineasOperacion' exige ($_POST['producto'] y $_POST['cantidad'])
     if (!empty($_POST['detalle']) && is_array($_POST['detalle'])) {
         $_POST['producto'] = [];
@@ -48,7 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (($_GET['accion'] ?? '') === 'guard
     unset($_SESSION['operaciones'][$token]);
     $_SESSION['mensaje'] = 'Venta #' . $nuevoId . ' registrada correctamente.';
     
-    header('Location: ' . ruta($modulo, ['id' => $nuevoId])); 
+    // Redirección inteligente según el botón seleccionado
+    if ($accionTipo === 'facturar') {
+        header('Location: ' . ruta($modulo, ['accion' => 'detalle', 'id' => $nuevoId]));
+    } else {
+        header('Location: ' . ruta($modulo, ['id' => $nuevoId])); 
+    }
     exit;
 }
 

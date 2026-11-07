@@ -31,6 +31,7 @@ window.agregarAlCarrito = function(id, nombre, precio, stock) {
     }
     window.guardarCarritoLocal();
     window.renderizarCarrito();
+    
 };
 
 window.cambiarCantidad = function(id, cantidad) {
