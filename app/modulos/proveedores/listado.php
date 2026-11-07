@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <?php defined('ALMANICA') || exit;
 // Iconos pequeños en línea (sin librerías externas).
 $svg = static function (string $nombre): string {
@@ -104,7 +104,7 @@ $svg = static function (string $nombre): string {
 </div>
 </div>
 </section>
-=======
+
 <?php
 defined('ALMANICA') || exit;
 
@@ -172,4 +172,4 @@ try {
         </table>
     </div>
 </section>
->>>>>>> bf4726a (Cambio dasbord)
+
