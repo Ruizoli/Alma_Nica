@@ -1,0 +1,121 @@
+/* AlmaNica · Estilos de los módulos Categorías, Clientes y Proveedores.
+   Todo está limitado a .mod-cat, .mod-cli y .mod-prov: no afecta a otros módulos. */
+
+/*  PARTE COMÚN (los tres módulos)  */
+:is(.mod-cat,.mod-cli,.mod-prov){--tint:#e6f0fa;--tint:color-mix(in srgb,var(--teal) 12%,#fff);--ring:#1379d033;--ring:color-mix(in srgb,var(--teal) 22%,transparent);padding:0;overflow:hidden;border-radius:16px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mi{width:15px;height:15px;flex-shrink:0}
+/* Cabecera del listado */
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:26px 30px;color:#fff;background:linear-gradient(115deg,var(--nav) 0%,var(--teal) 100%);overflow:hidden}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-head::after{content:"";position:absolute;right:-50px;top:-70px;width:210px;height:210px;border-radius:50%;background:#ffffff0f;pointer-events:none}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-title{display:flex;align-items:center;gap:16px;min-width:0;position:relative;z-index:1}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-badge{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#ffffff26;color:#fff;flex-shrink:0}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-badge .ui-icon{width:26px;height:26px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-title h2{margin:0;font-size:19px;font-weight:700;color:#fff}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-title p{margin:4px 0 0;font-size:12px;color:#ffffffc7}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-new{position:relative;z-index:1;background:var(--gold);color:var(--nav);border-radius:999px;padding:11px 20px;font-size:12px;font-weight:700;box-shadow:0 6px 16px #00000026;transition:filter .15s,transform .15s}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-new:hover{background:var(--gold);color:var(--nav);filter:brightness(1.07);transform:translateY(-1px)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-body{padding:26px 30px 30px}
+/* Buscador */
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 24px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search .search-field{position:relative;flex:1;min-width:220px;max-width:460px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search .search-field .mi{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted);pointer-events:none}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search input[type=search]{padding:12px 16px 12px 43px;border-radius:999px;background:#f5f8fa;border:1px solid var(--line);font-size:13px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search input[type=search]:focus{background:#fff;border-color:var(--teal);box-shadow:0 0 0 3px var(--ring);outline:none}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search .button{border-radius:999px;padding:11px 22px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-search .search-status{min-height:0;margin:-8px 0 0}
+/* Acciones */
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-actions{display:flex;align-items:center;gap:8px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-actions form{margin:0}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-actions .button.mini{padding:7px 12px;border-radius:8px;font-size:11px;gap:6px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-actions .button.mini .mi{width:13px;height:13px}
+/* Vacío y paginación */
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-empty{grid-column:1/-1;text-align:center;padding:48px 20px;border:2px dashed var(--line);border-radius:16px;color:var(--muted)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-empty-icon{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:var(--tint);color:var(--teal)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-empty-icon .ui-icon{width:30px;height:30px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-empty strong{display:block;font-size:15px;color:var(--ink)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-empty p{margin:8px auto 0;max-width:340px;font-size:12px;line-height:1.7}
+:is(.mod-cat,.mod-cli,.mod-prov) .pagination-bar{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+/* Formulario */
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-form-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:24px 30px;background:linear-gradient(100deg,var(--tint),#fff);border-bottom:1px solid var(--line)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-form-head .mod-badge{background:var(--teal);color:#fff;box-shadow:0 8px 18px var(--ring)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-form-head h2{color:var(--ink)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-form-head p{color:var(--muted)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-form-head .button{border-radius:999px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields{padding:28px 30px 30px;gap:20px 22px}
+:is(.mod-cat,.mod-cli,.mod-prov) .form-section{display:flex;align-items:center;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+:is(.mod-cat,.mod-cli,.mod-prov) .form-section i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:#fff;font-size:11px;letter-spacing:0}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields .field>span{font-size:12px;font-weight:700;color:var(--ink)}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields input:not([type=hidden]),:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields textarea{padding:12px 14px;border:1px solid #d9e3e8;border-radius:10px;background:#fbfcfd;font-size:13px;transition:border-color .15s,box-shadow .15s}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields textarea{min-height:110px;resize:vertical;line-height:1.55}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields input:focus,:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields textarea:focus{background:#fff;border-color:var(--teal);box-shadow:0 0 0 3px var(--ring);outline:none}
+:is(.mod-cat,.mod-cli,.mod-prov) .form-actions{margin-top:6px}
+:is(.mod-cat,.mod-cli,.mod-prov) .form-actions .button{padding:12px 24px;border-radius:10px;font-size:13px}
+@media (max-width:640px){
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-head,:is(.mod-cat,.mod-cli,.mod-prov) .mod-form-head{padding:22px 18px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-body{padding:20px 16px 24px}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-fields{padding:22px 18px 24px;grid-template-columns:1fr}
+:is(.mod-cat,.mod-cli,.mod-prov) .mod-new{width:100%}
+}
+
+/*  CATEGORÍAS  */
+/* Tarjetas de categorías */
+.mod-cat .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.mod-cat .cat-card{position:relative;display:flex;flex-direction:column;gap:12px;padding:22px 20px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+.mod-cat .cat-card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.mod-cat .cat-card:hover{transform:translateY(-3px);border-color:var(--ring);box-shadow:0 14px 28px #10354c1a}
+.mod-cat .cat-icon{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:var(--tint);color:var(--teal)}
+.mod-cat .cat-icon .ui-icon{width:22px;height:22px}
+.mod-cat .cat-name{margin:0;font-size:15px;font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+.mod-cat .cat-desc{flex:1;margin:0;font-size:12px;line-height:1.65;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.mod-cat .cat-desc.vacia{font-style:italic;opacity:.75}
+.mod-cat .cat-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:13px;border-top:1px dashed var(--line)}
+.mod-cat .cat-num{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.4px}
+
+/*  CLIENTES  */
+/* Tabla de clientes */
+.mod-cli .cli-table{width:100%;border-collapse:separate;border-spacing:0 10px;white-space:normal;font-size:13px}
+.mod-cli .cli-table th{padding:0 16px 2px;border:0;background:transparent;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.mod-cli .cli-table td{padding:14px 16px;background:#fff;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);vertical-align:middle;transition:background .15s}
+.mod-cli .cli-table td:first-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px}
+.mod-cli .cli-table td:last-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+.mod-cli .cli-table tbody tr:hover td{background:var(--tint);border-color:var(--ring)}
+.mod-cli .cli-persona{display:flex;align-items:center;gap:13px;min-width:0}
+.mod-cli .cli-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--nav));color:#fff;font-size:16px;font-weight:700;box-shadow:0 4px 10px var(--ring)}
+.mod-cli .cli-persona strong{display:block;font-size:14px;font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+.mod-cli .cli-persona small{display:inline-flex;align-items:center;gap:5px;margin-top:3px;font-size:11px;color:var(--muted)}
+.mod-cli .cli-persona small .mi{width:12px;height:12px}
+.mod-cli .cli-dato{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.mod-cli a.cli-dato:hover{color:var(--teal);text-decoration:underline}
+.mod-cli .cli-dato .mi{color:var(--teal)}
+.mod-cli .cli-dato.vacio{color:var(--muted);opacity:.7}
+.mod-cli .cli-dato.vacio .mi{color:inherit}
+.mod-cli .cli-table .mod-empty{display:block;border:2px dashed var(--line);background:transparent}
+@media (max-width:760px){
+.mod-cli .cli-table,.mod-cli .cli-table tbody,.mod-cli .cli-table tr,.mod-cli .cli-table td{display:block;width:100%}
+.mod-cli .cli-table thead{display:none}
+.mod-cli .cli-table tr{margin-bottom:14px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.mod-cli .cli-table td,.mod-cli .cli-table td:first-child,.mod-cli .cli-table td:last-child{border:0;border-radius:0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mod-cli .cli-table td:last-child{border-bottom:0}
+.mod-cli .cli-table td[data-label]::before{content:attr(data-label);font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.mod-cli .cli-table td.cli-celda-persona::before{display:none}
+}
+
+/*  PROVEEDORES  */
+/* Tarjetas de proveedores */
+.mod-prov .prov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.mod-prov .prov-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+.mod-prov .prov-card:hover{transform:translateY(-3px);border-color:var(--ring);box-shadow:0 14px 28px #10354c1a}
+.mod-prov .prov-top{display:flex;align-items:center;gap:14px;padding:18px 20px;background:linear-gradient(100deg,var(--tint),#fff);border-bottom:1px solid var(--line)}
+.mod-prov .prov-logo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;flex-shrink:0;background:var(--nav);color:var(--gold)}
+.mod-prov .prov-logo .ui-icon{width:23px;height:23px}
+.mod-prov .prov-top h3{margin:0;font-size:15px;font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+.mod-prov .prov-top small{display:block;margin-top:3px;font-size:10px;font-weight:600;letter-spacing:.4px;color:var(--muted)}
+.mod-prov .prov-datos{flex:1;display:flex;flex-direction:column;gap:12px;margin:0;padding:18px 20px;list-style:none}
+.mod-prov .prov-datos li{display:flex;align-items:flex-start;gap:11px;font-size:12px;line-height:1.55;color:var(--ink);min-width:0}
+.mod-prov .prov-ico{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex-shrink:0;background:var(--tint);color:var(--teal)}
+.mod-prov .prov-ico .mi{width:14px;height:14px}
+.mod-prov .prov-datos a{color:inherit;text-decoration:none;overflow-wrap:anywhere}
+.mod-prov .prov-datos a:hover{color:var(--teal);text-decoration:underline}
+.mod-prov .prov-datos .texto{padding-top:5px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mod-prov .prov-datos .vacio{color:var(--muted);opacity:.75;font-style:italic}
+.mod-prov .prov-foot{display:flex;justify-content:flex-end;padding:13px 20px;border-top:1px dashed var(--line);background:#fcfdfd}

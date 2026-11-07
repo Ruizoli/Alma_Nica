@@ -15,6 +15,7 @@
     <script src="assets/js/selectores.js?v=2" defer></script>
     <link href="assets/css/selectores.css?v=1" rel="stylesheet">
 <?php if (in_array($modulo,['compras','recepcion','historial'],true)): ?><link href="assets/css/compras.css?v=4" rel="stylesheet"><?php endif; ?>
+<?php if (in_array($modulo,['categorias','clientes','proveedores'],true)): ?><link href="assets/css/modulos-catalogo.css?v=1" rel="stylesheet"><?php endif; ?>
 <script src="assets/js/compras.js?v=1" defer></script>
 </head>
 <body class="sistema">
