@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php defined('ALMANICA') || exit;
 // Iconos pequeños en línea (sin librerías externas).
 $svg = static function (string $nombre): string {
@@ -103,3 +104,72 @@ $svg = static function (string $nombre): string {
 </div>
 </div>
 </section>
+=======
+<?php
+defined('ALMANICA') || exit;
+
+// Consulta directa de respaldo para garantizar que los datos se muestren
+try {
+    $busqueda = trim((string) ($_GET['q'] ?? ''));
+    if ($busqueda !== '') {
+        $stmt = $conexion->prepare("SELECT Id_Proveedor AS id, Nombre, Telefono, Correo, Direccion FROM proveedor WHERE Nombre LIKE ? OR Correo LIKE ? OR Telefono LIKE ? ORDER BY Nombre");
+        $stmt->execute(['%'.$busqueda.'%', '%'.$busqueda.'%', '%'.$busqueda.'%']);
+        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $stmt = $conexion->query("SELECT Id_Proveedor AS id, Nombre, Telefono, Correo, Direccion FROM proveedor ORDER BY Nombre");
+        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Throwable $e) {
+    $datos = [];
+}
+?>
+<section class="card-box">
+    <div class="section-heading">
+        <div>
+            <h2>Proveedores</h2>
+            <p class="muted">Gestión y listado de proveedores registrados.</p>
+        </div>
+        <a class="button" href="<?= escapar(ruta($modulo, ['accion' => 'nuevo'])) ?>">Nuevo proveedor</a>
+    </div>
+
+    <form method="get" class="search-bar" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <input type="hidden" name="modulo" value="<?= escapar($modulo) ?>">
+        <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, correo o teléfono..." value="<?= escapar($_GET['q'] ?? '') ?>" style="flex: 1; padding: 8px;">
+        <button class="button secondary" type="submit">Buscar</button>
+        <a class="button secondary" href="<?= escapar(ruta($modulo)) ?>">Limpiar</a>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding: 10px;">Nombre</th>
+                    <th style="text-align: left; padding: 10px;">Teléfono</th>
+                    <th style="text-align: left; padding: 10px;">Correo</th>
+                    <th style="text-align: left; padding: 10px;">Dirección</th>
+                    <th style="text-align: right; padding: 10px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($datos)): ?>
+                    <?php foreach ($datos as $row): ?>
+                        <tr>
+                            <td style="padding: 10px;"><?= escapar($row['Nombre'] ?? '') ?></td>
+                            <td style="padding: 10px;"><?= escapar($row['Telefono'] ?? '') ?></td>
+                            <td style="padding: 10px;"><?= escapar($row['Correo'] ?? '') ?></td>
+                            <td style="padding: 10px;"><?= escapar($row['Direccion'] ?? '') ?></td>
+                            <td style="padding: 10px; text-align: right;">
+                                <a class="button secondary" href="<?= escapar(ruta($modulo, ['accion' => 'editar', 'id' => $row['id']])) ?>" style="padding: 4px 8px; font-size: 12px;">Editar</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;" class="text-muted">No hay proveedores registrados.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
+>>>>>>> bf4726a (Cambio dasbord)

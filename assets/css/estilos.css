@@ -4,3 +4,11 @@ body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--tinta)
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a:focus-visible, button:focus-visible { outline: 3px solid #b9812e; outline-offset: 4px; }
+.transition-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.transition-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+    border-color: var(--bs-primary) !important;
+}

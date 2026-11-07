@@ -1,90 +1,128 @@
-<?php defined('ALMANICA') || exit; ?>
-<section class="card-box">
-<div class="section-heading">
-<div>
-<h2><?= escapar($titulo) ?> registrados</h2>
-<p class="muted">Consulta y administra la información de tu negocio.</p>
+<?php 
+defined('ALMANICA') || exit; 
+
+// 1. Obtenemos las filas de productos de forma segura
+$filasProductos = $listado['filas'] ?? [];
+
+// 2. Obtenemos el mapa de categorías para relacionar el ID con el Nombre de la categoría
+$mapaCategorias = $opciones['categoria'] ?? [];
+
+// 3. Agrupamos los productos por el nombre de su categoría
+$productosPorCategoria = [];
+foreach ($filasProductos as $p) {
+    $idCat = $p['Id_Categoria'] ?? 0;
+    // Buscamos el nombre de la categoría en el array de opciones, si no existe ponemos "Sin Categoría"
+    $nombreCat = $mapaCategorias[$idCat] ?? 'Sin Categoría';
+    
+    $productosPorCategoria[$nombreCat][] = $p;
+}
+?>
+
+<div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <!-- Cabecera del Módulo -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom gap-3">
+        <div>
+            <h3 class="fw-bold mb-1">Inventario de Productos</h3>
+            <p class="text-muted small mb-0">Productos organizados y separados por sus respectivas categorías.</p>
+        </div>
+        <a href="<?= escapar(ruta($modulo, ['accion' => 'nuevo'])) ?>" class="btn btn-primary fw-semibold rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo producto
+        </a>
+    </div>
+
+    <!-- Barra de Búsqueda General -->
+    <form method="get" class="mb-5">
+        <input type="hidden" name="modulo" value="<?= escapar($modulo) ?>">
+        <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+            <input type="search" name="q" class="form-control bg-light border-start-0 ps-0" placeholder="Buscar producto..." value="<?= escapar($_GET['q'] ?? '') ?>">
+            <button type="submit" class="btn btn-secondary px-4 fw-semibold">Buscar</button>
+        </div>
+    </form>
+
+    <?php if (!empty($productosPorCategoria)): ?>
+        <?php foreach ($productosPorCategoria as $categoriaNombre => $items): ?>
+            <!-- Sección por cada Categoría -->
+            <div class="mb-5">
+                <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
+                    <div class="bg-primary-subtle text-primary rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                        <i class="bi bi-folder-fill"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-0"><?= escapar($categoriaNombre) ?></h4>
+                    <span class="badge bg-light text-secondary border ms-3 rounded-pill px-3">
+                        <?= count($items) ?> <?= count($items) === 1 ? 'producto' : 'productos' ?>
+                    </span>
+                </div>
+
+                <!-- Cuadrícula de Cajas de Productos -->
+                <div class="row g-3">
+                    <?php foreach ($items as $p): ?>
+                    <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                        <div class="card border rounded-4 p-3 h-100 shadow-sm bg-white position-relative product-box transition-hover">
+                            
+                            <!-- Contenedor de Imagen o Icono del Producto -->
+                            <!-- Contenedor de Imagen o Icono del Producto -->
+                            <div class="bg-light rounded-3 mb-3 text-center d-flex align-items-center justify-content-center overflow-hidden border-0 position-relative" style="height: 120px;">
+                            <?php if (!empty($p['Imagen'])): ?>
+                            <!-- Apunta al script imagen.php de la raíz del sistema -->
+                            <img src="imagen.php?archivo=<?= escapar($p['Imagen']) ?>" alt="<?= escapar($p['Nombre']) ?>" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="position-absolute w-100 h-100 d-none align-items-center justify-content-center bg-light">
+                            <i class="bi bi-box-seam display-5 text-secondary opacity-75"></i>
+                            </div>
+                            <?php else: ?>
+                            <!-- Icono por defecto si no tiene imagen -->
+                            <i class="bi bi-box-seam display-5 text-secondary opacity-75"></i>
+                            <?php endif; ?>
+                            </div>
+                            <!-- Información Principal -->
+                            <span class="badge bg-light text-dark border font-monospace align-self-start mb-1" style="font-size: 0.75rem;"><?= escapar($p['Codigo']) ?></span>
+                            <h5 class="fw-bold text-dark mb-1 text-truncate" title="<?= escapar($p['Nombre']) ?>"><?= escapar($p['Nombre']) ?></h5>
+                            <p class="text-muted small mb-2">Marca: <?= escapar($p['Marca']) ?> | Talla: <?= escapar($p['Talla']) ?></p>
+
+                            <!-- Stock y Precio -->
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+                                <div>
+                                    <span class="d-block text-muted" style="font-size: 0.7rem;">Stock actual</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">
+                                        <?= numero($p['Stock_Actual']) ?> un.
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <span class="d-block text-muted" style="font-size: 0.7rem;">Precio</span>
+                                    <span class="fw-bold text-primary"><?= dinero($p['Precio_Venta']) ?></span>
+                                </div>
+                            </div>
+
+                            <!-- Botones de Acción Rápidos -->
+                            <div class="d-flex gap-1 mt-3 pt-2 border-top">
+                                <a href="<?= escapar(ruta($modulo, ['accion' => 'editar', 'id' => $p['Id_Producto']])) ?>" class="btn btn-sm btn-outline-primary w-50 rounded-pill">
+                                    <i class="bi bi-pencil me-1"></i>Editar
+                                </a>
+                                <a href="<?= escapar(ruta($modulo, ['accion' => 'eliminar', 'id' => $p['Id_Producto']])) ?>" class="btn btn-sm btn-outline-danger w-50 rounded-pill">
+                                    <i class="bi bi-trash me-1"></i>Eliminar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-box2 display-4 mb-3 d-block text-secondary"></i>
+            <p class="fs-5">No hay productos registrados en el inventario.</p>
+        </div>
+    <?php endif; ?>
 </div>
-<?php if (puedeEditar($modulo)): ?>
-<a class="button" href="<?= escapar(ruta($modulo,['accion'=>'nuevo'])) ?>">＋ Nuevo <?= escapar($def['singular']) ?>
-</a>
-<?php endif; ?>
-</div>
-<form class="filterbar" method="get" data-live-search="listado">
-<input type="hidden" name="modulo" value="<?= escapar($modulo) ?>">
-<label class="search-field">
-<span class="sr-only">Buscar</span>
-<input type="search" name="q" placeholder="Buscar <?= escapar(mb_strtolower($titulo)) ?>…" value="<?= escapar($_GET['q'] ?? '') ?>">
-</label>
-<?php if ($modulo==='productos'): foreach (['Id_Categoria'=>['categoria','Todas las categorías'],'Id_Proveedor'=>['proveedor','Todos los proveedores']] as $field=>[$opt,$text]): ?>
-<select name="<?= $field ?>" aria-label="<?= escapar($text) ?>">
-<option value=""><?= escapar($text) ?>
-</option>
-<?php foreach ($opciones[$opt] as $key=>$text): ?>
-<option value="<?= (int)$key ?>" <?= (string)($_GET[$field] ?? '')===(string)$key?'selected':'' ?>><?= escapar($text) ?>
-</option>
-<?php endforeach; ?>
-</select>
-<?php endforeach; endif; ?>
-<button class="button secondary">Buscar</button>
-</form>
-<div data-live-region="listado"><div class="table-wrap">
-<table>
-<thead>
-<tr>
-<?php if ($modulo==='productos'): ?><th>Imagen</th><?php endif; ?>
-<?php foreach ($def['campos'] as $field=>[$label,$tipo]): if ($tipo==='password' || $tipo==='textarea') continue; ?>
-<th><?= escapar($field==='Stock_Actual'?'Stock':$label) ?>
-</th>
-<?php endforeach; ?>
-<?php if (puedeEditar($modulo)): ?>
-<th>Acciones</th>
-<?php endif; ?>
-</tr>
-</thead>
-<tbody>
-<?php if (!$listado['filas']): ?>
-<tr>
-<td colspan="20" class="empty">
-<strong>No hay registros para mostrar</strong>
-<p>Agrega tu primer registro o cambia la búsqueda.</p>
-</td>
-</tr>
-<?php endif; ?>
-<?php foreach ($listado['filas'] as $fila): ?>
-<tr>
-<?php if ($modulo==='productos'): ?><td><img class="product-thumb" src="<?= escapar(fotoProducto($fila['Imagen'] ?? null)) ?>" alt="<?= escapar($fila['Nombre']) ?>" loading="lazy"></td><?php endif; ?>
-<?php foreach ($def['campos'] as $field=>[$label,$tipo]): if ($tipo==='password' || $tipo==='textarea') continue; ?>
-<td>
-<?php $v=$fila[$field] ?? ''; if ($tipo==='estado'): ?>
-<span class="badge <?= $v?'green':'red' ?>"><?= $v?'Activo':'Inactivo' ?>
-</span>
-<?php elseif ($field==='Stock_Actual'): ?>
-<span class="badge <?= (int)$v <= (int)($fila['Stock_Minimo'] ?? 5)?'amber':'green' ?>"><?= numero($v) ?>
-</span>
-<?php else: ?><?= escapar($tipo==='money'?dinero($v):($opciones[$tipo][$v] ?? ($v===''?'—':$v))) ?>
-<?php endif; ?>
-</td>
-<?php endforeach; ?>
-<?php if (puedeEditar($modulo)): ?>
-<td>
-<div class="row-actions">
-<a class="button mini secondary" href="<?= escapar(ruta($modulo,['accion'=>'editar','id'=>$fila[$def['id']]])) ?>">Editar</a>
-<?php if (esAdmin() && !in_array($modulo,['usuarios','empleados'],true)): ?>
-<form method="post" data-confirm="¿Eliminar este registro? Esta acción no se puede deshacer.">
-<?php campoCsrf(); ?>
-<input type="hidden" name="id" value="<?= (int)$fila[$def['id']] ?>">
-<input type="hidden" name="accion" value="eliminar">
-<button class="button mini danger-button">Eliminar</button>
-</form>
-<?php endif; ?>
-</div>
-</td>
-<?php endif; ?>
-</tr>
-<?php endforeach; ?>
-</tbody>
-</table>
-</div>
-<?php require __DIR__ . '/../../vistas/parciales/paginacion.php'; ?></div>
-</section>
+
+<style>
+.transition-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.transition-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    border-color: var(--bs-primary) !important;
+}
+</style>
