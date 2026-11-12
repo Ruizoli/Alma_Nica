@@ -1,6 +1,7 @@
 'use strict';
 (() => {
-const form=document.querySelector('[data-purchase-editor]'); if(!form)return;
+const form=document.querySelector('[data-purchase-editor]'); if(!form || form.dataset.purchaseReady)return;
+form.dataset.purchaseReady='true';
 const pick=s=>form.querySelector(s), product=pick('[data-entry-product]'), qty=pick('[data-entry-quantity]'), cost=pick('[data-entry-cost]'), sale=pick('[data-entry-sale]'), status=pick('[data-entry-status]'), add=pick('[data-entry-add]'), body=pick('[data-purchase-rows]');
 const options=new Map([...product.options].map(o=>[o.value,o]));
 let rows=JSON.parse(pick('[data-purchase-initial]').textContent).map(r=>({id:String(r.Id_Producto),quantity:String(r.Cantidad),cost:String(r.Precio_Costo),sale:String(r.Precio_Venta_Referencia ?? r.Precio_Venta_Actual ?? options.get(String(r.Id_Producto))?.dataset.price ?? '')})), editing=-1;

@@ -347,7 +347,7 @@ document.addEventListener("DOMContentLoaded", function() {
         inputBuscar.addEventListener('input', function(e) {
             let valor = e.target.value.toLowerCase().trim();
             let items = document.querySelectorAll('.producto-item');
-            items.items.forEach ? items.forEach(item => {
+            items.forEach(item => {
                 let nombre = item.getAttribute('data-nombre');
                 let codigo = item.getAttribute('data-codigo');
                 if (nombre.includes(valor) || codigo.includes(valor)) {
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     item.style.display = 'none';
                 }
-            }) : null;
+            });
         });
     }
 });

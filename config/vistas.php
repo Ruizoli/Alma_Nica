@@ -1,6 +1,7 @@
 <?php
 // Rutas internas permitidas.
 return [
+    'venta_detalle' => '../modulos/ventas/detalle.php',
     'ventas' => '../modulos/ventas/vista.php',
     'dashboard' => '../modulos/dashboard/vista.php',
     'reportes' => '../modulos/reportes/vista.php',

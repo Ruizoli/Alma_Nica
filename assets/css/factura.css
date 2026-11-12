@@ -1,0 +1,23 @@
+
+.factura-acciones{display:flex;gap:12px;justify-content:flex-end;margin-bottom:20px}
+.factura-venta{background:white;color:#111;max-width:900px;min-height:1000px;margin:auto;padding:50px;font:14px Arial,sans-serif;box-sizing:border-box}
+.factura-cabecera{display:flex;justify-content:space-between;gap:25px;margin-bottom:55px}
+.factura-marca{display:flex;gap:16px;align-items:center}.factura-marca img{width:90px;height:90px;object-fit:contain}
+.factura-venta h1{font-size:28px;margin:0 0 5px}.factura-venta h2{font-size:22px;margin:0 0 8px}.factura-venta p{margin:5px 0}
+.factura-numero{text-align:right;min-width:180px}.factura-venta table{width:100%;border-collapse:collapse;margin-bottom:30px}
+.factura-venta th{background:#d3d3d3;color:#111;padding:10px;text-align:left;text-transform:none;letter-spacing:normal}
+.factura-venta td{padding:12px 10px;border:0;color:#111}.factura-productos th:nth-child(n+3),.factura-productos td:nth-child(n+3){text-align:right}
+.factura-totales{margin:25px 0 0 auto;width:290px;background:#ddd;padding:16px}.factura-totales p{display:flex;justify-content:space-between;gap:15px;padding:7px 0}
+.factura-pago{clear:both;padding-top:20px}
+@media(max-width:650px){.factura-venta{padding:18px;overflow:auto}.factura-cabecera{flex-wrap:wrap}}
+@media print{
+@page{size:A4;margin:0}
+body.sistema{background:white!important;display:block!important}
+body *{visibility:hidden}
+.factura-venta,.factura-venta *{visibility:visible}
+.factura-venta{position:absolute;left:0;top:0;width:100%;max-width:none;min-height:0;margin:0;padding:16mm 14mm;font-size:10pt;box-shadow:none}
+.factura-acciones,.sidebar,.topbar,.app-footer{display:none!important}
+.factura-venta th,.factura-totales{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.factura-venta thead{display:table-header-group}.factura-venta tr,.factura-totales{break-inside:avoid}
+.factura-cabecera{margin-bottom:14mm}.factura-venta h1{font-size:20pt}.factura-venta h2{font-size:16pt}
+}

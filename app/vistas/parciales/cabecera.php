@@ -21,18 +21,17 @@
 
 <?php if (in_array($modulo,['compras','recepcion','historial'],true)): ?><link href="assets/css/compras.css?v=4" rel="stylesheet"><?php endif; ?>
 <?php if (in_array($modulo,['categorias','clientes','proveedores'],true)): ?><link href="assets/css/modulos-catalogo.css?v=1" rel="stylesheet"><?php endif; ?>
-<script src="assets/js/compras.js?v=1" defer></script>
 
-    <?php if (in_array($modulo,['compras','recepcion','historial'],true)): ?>
-        <link href="assets/css/compras.css?v=4" rel="stylesheet">
-    <?php endif; ?>
+
+
 
     <!-- Scripts con defer -->
     <script src="assets/js/sistema.js?v=6" defer></script>
     <script src="assets/js/busqueda.js?v=1" defer></script>
     <script src="assets/js/selectores.js?v=2" defer></script>
-    <script src="assets/js/compras.js?v=1" defer></script>
+    <script src="assets/js/compras.js?v=2" defer></script>
 
+<?php if ($modulo === 'ventas'): ?><link href="assets/css/factura.css?v=1" rel="stylesheet"><?php endif; ?>
 </head>
 <body class="sistema bg-light">
 
