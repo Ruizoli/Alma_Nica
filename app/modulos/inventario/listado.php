@@ -61,19 +61,19 @@ foreach ($filasProductos as $p) {
                         <div class="card border rounded-4 p-3 h-100 shadow-sm bg-white position-relative product-box transition-hover">
                             
                             <!-- Contenedor de Imagen o Icono del Producto -->
-                            <!-- Contenedor de Imagen o Icono del Producto -->
                             <div class="bg-light rounded-3 mb-3 text-center d-flex align-items-center justify-content-center overflow-hidden border-0 position-relative" style="height: 120px;">
-                            <?php if (!empty($p['Imagen'])): ?>
-                            <!-- Apunta al script imagen.php de la raíz del sistema -->
-                            <img src="imagen.php?archivo=<?= escapar($p['Imagen']) ?>" alt="<?= escapar($p['Nombre']) ?>" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="position-absolute w-100 h-100 d-none align-items-center justify-content-center bg-light">
-                            <i class="bi bi-box-seam display-5 text-secondary opacity-75"></i>
+                                <?php if (!empty($p['Imagen'])): ?>
+                                    <!-- Apunta al script imagen.php de la raíz del sistema -->
+                                    <img src="imagen.php?archivo=<?= escapar($p['Imagen']) ?>" alt="<?= escapar($p['Nombre']) ?>" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="position-absolute w-100 h-100 d-none align-items-center justify-content-center bg-light">
+                                        <i class="bi bi-box-seam display-5 text-secondary opacity-75"></i>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Icono por defecto si no tiene imagen -->
+                                    <i class="bi bi-box-seam display-5 text-secondary opacity-75"></i>
+                                <?php endif; ?>
                             </div>
-                            <?php else: ?>
-                            <!-- Icono por defecto si no tiene imagen -->
-                            <i class="bi bi-box-seam display-5 text-secondary opacity-75"></i>
-                            <?php endif; ?>
-                            </div>
+
                             <!-- Información Principal -->
                             <span class="badge bg-light text-dark border font-monospace align-self-start mb-1" style="font-size: 0.75rem;"><?= escapar($p['Codigo']) ?></span>
                             <h5 class="fw-bold text-dark mb-1 text-truncate" title="<?= escapar($p['Nombre']) ?>"><?= escapar($p['Nombre']) ?></h5>
@@ -98,9 +98,15 @@ foreach ($filasProductos as $p) {
                                 <a href="<?= escapar(ruta($modulo, ['accion' => 'editar', 'id' => $p['Id_Producto']])) ?>" class="btn btn-sm btn-outline-primary w-50 rounded-pill">
                                     <i class="bi bi-pencil me-1"></i>Editar
                                 </a>
-                                <a href="<?= escapar(ruta($modulo, ['accion' => 'eliminar', 'id' => $p['Id_Producto']])) ?>" class="btn btn-sm btn-outline-danger w-50 rounded-pill">
-                                    <i class="bi bi-trash me-1"></i>Eliminar
-                                </a>
+
+                                <form method="post" action="<?= escapar(ruta($modulo, ['accion' => 'eliminar', 'id' => $p['Id_Producto']])) ?>" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');">
+                                    <?php campoCsrf(); ?>
+                                    <input type="hidden" name="accion" value="eliminar">
+                                    <input type="hidden" name="id" value="<?= (int)$p['Id_Producto'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-pill">
+                                        <i class="bi bi-trash me-1"></i>Eliminar
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

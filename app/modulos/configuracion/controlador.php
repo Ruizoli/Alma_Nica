@@ -2,6 +2,13 @@
 // Incluido por sistema.php después de validar sesión, permisos y CSRF.
 defined('ALMANICA') || exit;
 
+require_once __DIR__ . '/respaldo.php';
+
+// Si se presionó el botón de respaldar BD, descarga el archivo .sql y termina
+if (($_GET['accion'] ?? '') === 'respaldo_bd') {
+    descargarRespaldoManual($conexion);
+}
+
 $vista = 'configuracion';
 require_once __DIR__ . '/modelo.php';
 $perfil = obtenerPerfil($conexion, (int)$_SESSION['empleado']['usuario_id']);

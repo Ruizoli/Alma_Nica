@@ -44,5 +44,11 @@
 <dd>Se cierra tras 30 minutos sin actividad.</dd>
 </dl>
 
+<hr>
+<h3>Respaldo de base de datos</h3>
+<p class="muted">Descarga una copia completa (.sql) con toda la estructura y los datos actuales. El sistema también realiza un respaldo automático cada 24 horas.</p>
+<a href="<?= escapar(ruta('configuracion', ['accion' => 'respaldo_bd'])) ?>" class="button">
+    Descargar respaldo completo (.sql)
+</a>
 </section>
 </div>
